@@ -1,5 +1,5 @@
 // Dan Goldberg
-// Cloud Information class
+// Element class
 
 #ifndef ELEMENT_H_
 #define ELEMENT_H_
@@ -21,7 +21,8 @@ private:
   std::list<std::string> prnames_;
   std::list<std::string> prtypes_;
   T* ellist_;
-  int nProperties_;
+  int numpr_;
+  size_t numel_;
   std::list<CloudProperty> properties_;
 }
 #endif
