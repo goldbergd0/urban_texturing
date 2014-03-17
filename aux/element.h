@@ -6,23 +6,24 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include "property.h"
 
-template <class T>
 class Element{
 public:
   Element();
   virtual ~Element();
 
   void setName(const std::string& s){name_=s;};
-  
+  void addProperty(const Property& p);
+  Property popProperty();
+
+  bool writeHeader(FILE* file)const;
+  bool writeData(FILE* file)const;
   
 private:
   std::string elname_;
-  std::list<std::string> prnames_;
-  std::list<std::string> prtypes_;
-  T* ellist_;
+  std::list<Property> properties_;
   int numpr_;
-  size_t numel_;
-  std::list<CloudProperty> properties_;
+  int numel_;
 }
 #endif
