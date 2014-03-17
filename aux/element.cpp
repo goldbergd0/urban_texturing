@@ -28,6 +28,12 @@ bool Element::writeHeader(FILE* file)const{
 
 bool Element::writeData(FILE* file)const{
   if (!file) return false;
+  std::list::iterator it;
+  
+  for (it = properties_.begin(); it != properties_.end(); it++){
+    
+  }
+
   fprintf(file, 
   return true;
 }
