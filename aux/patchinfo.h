@@ -11,13 +11,15 @@
 class PatchInfo{
 public:
   PatchInfo();
+  PatchInfo(const unsigned int& n);
   virtual ~PatchInfo();
   
+  void setPatches(const Patch* patches){patches_=patches;};
   Patch findPatch(const Eigen::Vector3d& point)const;
   
 private:
   unsigned int nVerts_;
   Patch* patches_;
   
-}
+};
 #endif

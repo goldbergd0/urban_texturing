@@ -16,11 +16,5 @@
 #include <GL/gl.h>
 #include <jpeglib.h>
 
-// Scene Constants
-const int WIDTH = 1280;
-const int HEIGHT = 720;
 
-// Buffers
-vertBuff
-eleBuff
-nVert
+

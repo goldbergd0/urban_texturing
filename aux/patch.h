@@ -5,9 +5,11 @@
 #define PATCH_H_
 #include <Eigen/Dense>
 
-class PatchInfo{
+class Patch{
 public:
   Patch();
+  Patch(const Eigen::Vector3d& p,const Eigen::Vector3d& n,const unsigned int& nIm,
+        const Eigen::Vector3i& top3);
   virtual ~Patch();
   
   Eigen::Vector3d getPoint()const {return point_;};
@@ -21,5 +23,5 @@ private:
   unsigned int nImgs_;
   Eigen::Vector3i top3_;
   
-}
+};
 #endif

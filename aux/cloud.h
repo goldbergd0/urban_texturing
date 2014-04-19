@@ -10,6 +10,13 @@
 #define CLOUD_H_
 
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <Eigen/Dense>
+#include "../aux/cloudinfo.h"
+#include "../aux/patchinfo.h"
 
 class Cloud{
 public:
@@ -18,17 +25,21 @@ public:
   Cloud(std::string name, CloudInfo info);
   virtual ~Cloud();
 
-  void setCloudInfo(const CloudInfo& info){info_=info;};
-  void setName(const std::string name){name_=name;};
-  bool plyWriteHeader();
-  bool plyWriteData();
-  bool plyWrite();
+  void setCloudInfo(const CloudInfo& info){points_=info;};
+  void setPatchInfo(const PatchInfo& info){patches_=info;};
+  
+  bool readPatchInfo(const std::string& fname)const;
+  bool readCameraInfo(const std::string& fname)const;
   
 
+  bool plyWriteHeader(const std::string& fname)const;
+  bool plyWriteData(const std::string& fname)const;
+  bool plyWrite(const std::string& fname)const;
 
 private:
-  CloudInfo info_;
-  std::string name_;
+  CloudInfo points_;
+  PatchInfo patches_;
+  std::vector<Eigen::MatrixXd(3,4)> cameras_;
 
 }
 
