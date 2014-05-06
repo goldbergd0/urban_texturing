@@ -1,0 +1,39 @@
+Read in PLY
+  Read header infomation
+    get vert info
+      read lines until you get to "element"
+      read number of vertices
+    get face info
+      read lines until you get to "element"
+      read number of faces
+    read until you get to end_header
+  Read points (element vertex)
+    for number of vertices
+      get line, read first 3 numbers for x,y,z
+  Read triangle information (element face)
+    for number of faces
+      get line, read 2nd,3rd,4th number for triangle information
+
+Read in Patches file
+  Store total number of points
+  Point information
+    For each point need to store:
+      3D point
+      3D normal
+      Number of images
+      Indices of best 5 images
+  Read file
+    Open file with known filename
+    if file is open
+      Read first line, make sure it says PATCHES
+      Read next line to get number of points
+      for the number of points
+        read 9 lines for that 1 point and
+        extract information from those 9 lines
+        if the xyz is in the ply file save the patch information
+Read in Camera projection files
+Read in center files
+Read images
+Read option file
+For each triangle chose best image for triangle
+Display with OpenGL
