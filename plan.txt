@@ -1,5 +1,6 @@
 Camera Projection matrices: pmvs/txt
 Images: pmvs/visualize
+GPS positions in LSR space: pmvs/pos
 
 Read in PLY
   Read header infomation
@@ -35,8 +36,18 @@ Read in Patches file
         extract information from those 9 lines
         if the xyz is in the ply file save the patch information
 Read in Camera projection files
-Read in center files
+  Array of cameras
+  Store 3x4 matrix as eigen::matrix
+  RQ Decomposition to find camera pointing direction
+Read in center files (may not be needed if RQ works)
+  PLY file - x,y,z locations for each camera
 Read images
+  only the 22 images
 Read option file (for 22 target image indices)
+
+
 For each triangle chose best image for triangle
+  Make cost function for images from camera information from best images list in patch info
+  
 Display with OpenGL
+  
