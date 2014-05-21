@@ -3,25 +3,35 @@
 
 #ifndef PATCH_H_
 #define PATCH_H_
-#include <Eigen/Dense>
+
+#include <vector>
+
+#include <pcl/point_types.h>
 
 class Patch{
 public:
   Patch();
-  Patch(const Eigen::Vector3d& p,const Eigen::Vector3d& n,const unsigned int& nIm,
-        const Eigen::Vector3i& top3);
+  Patch(const pcl::PointXYZ& p,const pcl::Normal& n,const unsigned int& nIm,
+        const std::vector<unsigned int>& top3);
+  Patch(const Patch& p);
   virtual ~Patch();
   
-  Eigen::Vector3d getPoint()const {return point_;};
-  Eigen::Vector3d getNormal()const {return normal_;};
+  pcl::PointXYZ getPoint()const {return point_;};
+  pcl::Normal getNormal()const {return normal_;};
   unsigned int getNImages()const {return nImgs_;};
-  Eigen::Vector3i getTop3()const {return top3_;};
+  std::vector<unsigned int> getTop3()const {return top3_;};
   
+  Patch& operator= (const Patch& p);
+  
+  friend bool operator==(Patch& p1, pcl::PointXYZ p2);
+  friend bool operator==(pcl::PointXYZ p1, Patch& p2);
+  friend bool operator!=(Patch& p1, pcl::PointXYZ p2);
+  friend bool operator!=(pcl::PointXYZ p1, Patch& p2);
+
 private:
-  Eigen::Vector3d point_;
-  Eigen::Vector3d normal_;
+  pcl::PointXYZ point_;
+  pcl::Normal normal_;
   unsigned int nImgs_;
-  Eigen::Vector3i top3_;
-  
+  std::vector<unsigned int> top3_;
 };
 #endif

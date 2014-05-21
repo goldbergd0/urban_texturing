@@ -13,13 +13,14 @@ public:
   PatchInfo();
   PatchInfo(const unsigned int& n);
   virtual ~PatchInfo();
-  
-  void setPatches(const Patch* patches){patches_=patches;};
+ 
+  void addPatch(const Patch p,unsigned int i){patches_[i]=p;};
+  void setPatches(const std::vector<Patch> patches){patches_=patches;};
   Patch findPatch(const Eigen::Vector3d& point)const;
   
 private:
   unsigned int nVerts_;
-  Patch* patches_;
+  std::vector<Patch> patches_;
   
 };
 #endif

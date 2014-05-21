@@ -11,6 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 
 # Find external libraries
 find_package(Eigen3 REQUIRED)
+find_package(PCL 1.2 REQUIRED)
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
@@ -25,6 +26,7 @@ endif()
 #include_directories(${IMMERSIVE_GAMING_SOURCE_DIR})
 #include_directories(${IMMERSIVE_GAMING_BINARY_DIR})
 include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(${PCL_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "-Wall -g")
 if (cmake_build_type_tolower STREQUAL "release")

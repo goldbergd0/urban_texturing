@@ -3,6 +3,7 @@ Images: pmvs/visualize
 GPS positions in LSR space: pmvs/pos
 
 Read in PLY
+  DID WITH PCL
   Read header infomation
     get vert info
       read lines until you get to "element"
@@ -45,9 +46,15 @@ Read images
   only the 22 images
 Read option file (for 22 target image indices)
 
-
 For each triangle chose best image for triangle
   Make cost function for images from camera information from best images list in patch info
+  Busy area - can move through files
+  Constant area - try to stay on same image
+  Combining two images (seam of 2 images) - blend them
+  Distance from edge of image
+    Proj matrix to 2D, see how close to dim of image
   
 Display with OpenGL
-  
+  IF MEMORY IS A PROBLEM
+    Look into histogram of images used
+    See if we can throw any away 

@@ -13,7 +13,7 @@ public:
   
   
 private:
-  float* verts_;
+  std::vector<float> verts_;
   unsigned long nVerts_;
   
 }
