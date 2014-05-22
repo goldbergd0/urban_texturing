@@ -40,6 +40,8 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
   unsigned int num;
   std::vector<unsigned int> top3; 
   Patch patch;
+  
+  ////////// READ FILE ///////////
   std::string line;
   std::ifstream file;
   file.open(fname);
