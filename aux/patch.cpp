@@ -12,7 +12,11 @@ Patch::Patch(const Patch& p)
   {}
 
 Patch& Patch::operator= (const Patch& p){
-  point_ = 
+  point_ = p.getPoint();
+  normal_ = p.getNormal();
+  nImgs_ = p.getNImages();
+  top3_ = p.getTop3();
+  return *this;
 }
  
 bool operator==(Patch& p1, pcl::PointXYZ& p2){
