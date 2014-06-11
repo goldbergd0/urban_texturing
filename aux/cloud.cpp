@@ -10,8 +10,11 @@ Cloud::Cloud(unsigned int N)
   : N_(N),points_(new pcl::PointCloud<pcl::PointXYZ>),patches(std::vector<Patch>(N)) {}
 
 Cloud::Cloud(const Cloud& c)
-  : N_(c.getN()),points_(c.getPoints()),patches_(c.getPatches()),cameras_(c.getCameras())
-  {}
+  : N_(c.getN()),
+    points_(c.getPoints()),
+    patches_(c.getPatches()),
+    cameras_(c.getCameras())
+    {}
 
 Cloud::~Cloud(){}
 
@@ -45,6 +48,7 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
   std::string line;
   std::ifstream file;
   file.open(fname);
+  unsigned int NUM
   if (file.is_open()){
     getline(file,line);
     if (line.compare(0,7,"PATCHES")!=0){
@@ -52,11 +56,34 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
     }
     getline(file,line);
     std::istringstream ss(line);
-    ss >> num;
-    
-    getline(file,line);
-    while (true){
+    ss >> NUM;
+    ss.clear();
+    while (NUM>0){
+      getline(file,line); // PATCHS
+      getline(file,line); // X Y Z 1
+      ss.str(line);
+      //  pcl::PointXYZ pt; 
+      //  pt.getVector3fMap() = anotherVec3f; 
+      ss >> p.x;
+      ss >> p.y;
+      ss >> p.z;
+      ss.clear();
+      getline(file,line); // Nx Ny Nz 0
+      ss.str(line);
+      ss >> n.normal_x;
+      ss >> n.normal_y;
+      ss >> n.normal_z;
+      ss.clear();
+      getline(file,line); // goodness debug debug
+      getline(file,line); // N (images point visible in)
+      ss.str(line);
+      ss >> num;
+      getline(file,line); // N number of image indices
+      getline(file,line); // N2 (textures don't agree well)
+      getline(file,line); // N2 number of image indices
+      getline(file,line); // [EMPTY]
       
+      NUM--;
     }
     return true;
   }

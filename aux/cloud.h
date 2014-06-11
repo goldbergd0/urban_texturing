@@ -23,9 +23,6 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/point_types.h>
 
-#include "../aux/cloudinfo.h"
-#include "../aux/patchinfo.h"
-
 class Cloud{
 public:
   Cloud();
