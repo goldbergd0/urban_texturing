@@ -41,6 +41,7 @@ public:
 private:
   unsigned int N_;
   pcl::PointCloud<pcl::pointXYZ> points_;
+  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
   std::vector<Eigen::MatrixXd(3,4)> cameras_;

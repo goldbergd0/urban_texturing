@@ -1,14 +1,14 @@
 #include "patch.h"
 
 Patch::Patch(const Eigen::Vector3d& p,const Eigen::Vector3d& n,const unsigned int& nIm,
-      const Eigen::Vector3i& top3)
-  : point_(p),normal_(n),nImgs_(nIm),top3_(top3)
+      const Eigen::Vector3i& inds)
+  : point_(p),normal_(n),nImgs_(nIm),inds_(inds)
   {}
 Patch::Patch(const Patch& p)
   : point_(p.getPoint()),
     normal_(p.getNormal),
     nImgs_(p.getNImages()),
-    top3_(p.getTop3())
+    inds_(p.getInds())
   {}
 
 Patch& Patch::operator= (const Patch& p){

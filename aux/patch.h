@@ -12,14 +12,14 @@ class Patch{
 public:
   Patch();
   Patch(const pcl::PointXYZ& p,const pcl::Normal& n,const unsigned int& nIm,
-        const std::vector<unsigned int>& top3);
+        const std::vector<unsigned int>& inds);
   Patch(const Patch& p);
   virtual ~Patch();
   
   pcl::PointXYZ getPoint()const {return point_;};
   pcl::Normal getNormal()const {return normal_;};
   unsigned int getNImages()const {return nImgs_;};
-  std::vector<unsigned int> getTop3()const {return top3_;};
+  std::vector<unsigned int> getInds()const {return inds_;};
   
   Patch& operator= (const Patch& p);
   
@@ -32,6 +32,6 @@ private:
   pcl::PointXYZ point_;
   pcl::Normal normal_;
   unsigned int nImgs_;
-  std::vector<unsigned int> top3_;
+  std::vector<unsigned int> inds_;
 };
 #endif
