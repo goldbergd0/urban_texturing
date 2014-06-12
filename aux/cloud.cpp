@@ -12,11 +12,16 @@ Cloud::Cloud()
     cameras_(){}
 
 Cloud::Cloud(unsigned int N)
-  : N_(N),points_(new pcl::PointCloud<pcl::PointXYZ>),patches(std::vector<Patch>(N)) {}
+  : N_(N),
+    points_(new pcl::PointCloud<pcl::PointXYZ>),
+    kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
+    patches_(std::vector<Patch>(N)) {}
 
 Cloud::Cloud(const Cloud& c)
   : N_(c.getN()),
     points_(c.getPoints()),
+    kdtree_(c.getTree()),
+    mesh_(c.getMesh()),
     patches_(c.getPatches()),
     cameras_(c.getCameras())
     {}
@@ -39,6 +44,8 @@ bool Cloud::readPly(const std::string& fname)const{
   }
   pcl::fromROSMsg(mesh_.cloud,points_);
   N_ = (unsigned int) points_.points.size();
+  kdtree.setInputCloud(points_);
+  
   return true;
 }
 
@@ -108,8 +115,22 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
       getline(file,line); // [EMPTY]
       line.clear();
       
+      patch.setPoint(p);
+      patch.setNormal(n);
+      patch.setNImages(num);
+      patch.setInds(inds);
+
       // K-D tree search
+      int K = 1;
+      std::vector<int> pointIdxNKNSearch(K);
+      std::vector<float> pointNKNSquaredDistance(K);
       
+      if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
+        if( patch == points_[ pointIdxNKNSearch[0] ] ){
+          patch.setPointInd(pointIdxNKNSearch[0]);
+          patches_.push_back(patch);
+        }
+      }
       
       NUM--;
     }

@@ -20,6 +20,8 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/point_cloud.h>
+#include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/point_types.h>
 
@@ -29,6 +31,12 @@ public:
   Cloud(CloudInfo info, std::string name);
   Cloud(std::string name, CloudInfo info);
   virtual ~Cloud();
+
+  pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
+  pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
+  pcl::PolygonMesh getMesh()const{return mesh_;};
+  std::vector<Patch> getPatches()const{return patches_;};
+  std::vector<Eigen::MatrixXd(3,4)> getCameras()const{return cameras_;};
 
   bool readPly(const std::string& fname)const;
   bool readPatches(const std::string& fname)const;
@@ -40,7 +48,7 @@ public:
 
 private:
   unsigned int N_;
-  pcl::PointCloud<pcl::pointXYZ> points_;
+  pcl::PointCloud<pcl::PointXYZ> points_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
