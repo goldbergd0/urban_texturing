@@ -27,18 +27,20 @@
 #include <pcl/PolygonMesh.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
+#include <pcl/io/vtk_lib_io.h>
 
 #include "../aux/patch.h"
 
-class Cloud{
+class MyCloud{
 public:
-  Cloud();
+  MyCloud();
 //  Cloud(CloudInfo info, std::string name);
-  Cloud(const Cloud& c);
-  virtual ~Cloud();
-
-  pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
+  MyCloud(const MyCloud& c);
+  virtual ~MyCloud();
+  pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
+  //pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
   pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
+  //pcl::KdTree<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
   std::vector<Patch> getPatches()const{return patches_;};
   std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
@@ -47,11 +49,14 @@ public:
   bool readPly(const std::string& fname);
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
+
+  std::string toString()const;
   
 private:
   size_t N_;
-  pcl::PointCloud<pcl::PointXYZ> points_;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr points_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
+  //pcl::KdTree<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
   std::vector<Eigen::MatrixXd> cameras_;

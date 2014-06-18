@@ -3,7 +3,7 @@
 
 #include "cloud.h"
 
-Cloud::Cloud()
+MyCloud::MyCloud()
   : N_(),
     points_(),
     kdtree_(),
@@ -17,7 +17,7 @@ Cloud::Cloud(unsigned int N)
     kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
     patches_(std::vector<Patch>(N)) {}
 */
-Cloud::Cloud(const Cloud& c)
+MyCloud::MyCloud(const MyCloud& c)
   : N_(c.getN()),
     points_(c.getPoints()),
     kdtree_(c.getTree()),
@@ -26,12 +26,13 @@ Cloud::Cloud(const Cloud& c)
     cameras_(c.getCameras())
     {}
 
-Cloud::~Cloud(){}
+MyCloud::~MyCloud(){}
 
 // fname is name and path
-bool Cloud::readPly(const std::string& fname){
+bool MyCloud::readPly(const std::string& fname){
   /*
   Example from http://www.pcl-users.org/Registering-PolygonMeshes-td4025472.html
+  
     pcl::PolygonMesh mesh; 
     pcl::PointCloud<PointT> point_cloud; 
     pcl::io::loadPolygonFilePLY("filename.ply", mesh); 
@@ -39,23 +40,27 @@ bool Cloud::readPly(const std::string& fname){
     // Do registration manipulations to point_cloud 
     pcl::toROSMsg(point_cloud, mesh.cloud); 
   */
-  pcl::PLYReader reader;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  return (reader.read(fname,*cloud)<0);
-  /*int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
+  //pcl::PLYReader reader;
+  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  //return (reader.read(fname,*cloud)<0);
+  
+  int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
   if (status==-1){
     return false;
   }
-  pcl::fromROSMsg(mesh_.cloud,points_);
-  N_ = points_.points.size();
-  kdtree.setInputCloud(points_);
-  */
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::fromPCLPointCloud2(mesh_.cloud,cloud);
+  points_.reset(new pcl::PointCloud<pcl::PointXYZ>(cloud));
+  N_ = cloud.points.size();
+  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (points_);
+  kdtree_.setInputCloud(points_);
+  
   
   return true;
 }
 
 // fpath is path to (and including) PMVS
-bool Cloud::readPatchInfo(const std::string& fpath){
+bool MyCloud::readPatchInfo(const std::string& fpath){
   std::string name("/models/option-0000.patch");
   if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
@@ -138,7 +143,7 @@ bool Cloud::readPatchInfo(const std::string& fpath){
       patch.setInds(inds);
 
       if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-        if( (patch) == points_[ pointIdxNKNSearch[0] ] ){
+        if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
           patch.setPointInd(pointIdxNKNSearch[0]);
           patches_.push_back(patch);
         }
@@ -154,7 +159,7 @@ bool Cloud::readPatchInfo(const std::string& fpath){
 
 
 // fpath is path to pmvs
-bool Cloud::readCameras(const std::string& fpath){
+bool MyCloud::readCameras(const std::string& fpath){
   std::string name("/txt");
   if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
