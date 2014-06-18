@@ -1,20 +1,20 @@
 /**
-* textureMain.cpp
-* 
 * Dan Goldberg
-* 
-* Main class for texturing point clouds
 * 
 */
 
-#include <Eigen/Core>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <GL/gl.h>
-#include <jpeglib.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
+#include "aux/patch.h"
+#include "aux/cloud.h"
 
+std::string dir("/home/dan/pmvs/");
+std::string plyname("models/option-0000-crop-alpha.ply");
 
+Cloud c;
+c.getPoints();
+//c.readPly(dir+plyname);
+//c.readPatchInfo(dir);
+//c.readCameras(dir);

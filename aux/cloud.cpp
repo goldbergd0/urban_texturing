@@ -5,18 +5,18 @@
 
 Cloud::Cloud()
   : N_(),
-    points_(new pcl::PointCloud<pcl::PointXYZ>),
-    kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
+    points_(),
+    kdtree_(),
     mesh_(),
     patches_(),
     cameras_(){}
-
+/*
 Cloud::Cloud(unsigned int N)
   : N_(N),
     points_(new pcl::PointCloud<pcl::PointXYZ>),
     kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
     patches_(std::vector<Patch>(N)) {}
-
+*/
 Cloud::Cloud(const Cloud& c)
   : N_(c.getN()),
     points_(c.getPoints()),
@@ -28,7 +28,8 @@ Cloud::Cloud(const Cloud& c)
 
 Cloud::~Cloud(){}
 
-bool Cloud::readPly(const std::string& fname)const{
+// fname is name and path
+bool Cloud::readPly(const std::string& fname){
   /*
   Example from http://www.pcl-users.org/Registering-PolygonMeshes-td4025472.html
     pcl::PolygonMesh mesh; 
@@ -38,30 +39,45 @@ bool Cloud::readPly(const std::string& fname)const{
     // Do registration manipulations to point_cloud 
     pcl::toROSMsg(point_cloud, mesh.cloud); 
   */
-  int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
+  pcl::PLYReader reader;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  return (reader.read(fname,*cloud)<0);
+  /*int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
   if (status==-1){
     return false;
   }
   pcl::fromROSMsg(mesh_.cloud,points_);
-  N_ = (unsigned int) points_.points.size();
+  N_ = points_.points.size();
   kdtree.setInputCloud(points_);
+  */
   
   return true;
 }
 
-bool Cloud::readPatchInfo(const std::string& fname)const{
+// fpath is path to (and including) PMVS
+bool Cloud::readPatchInfo(const std::string& fpath){
+  std::string name("/models/option-0000.patch");
+  if (fpath.compare(fpath.size()-1,1,"/")){
+    name = name.substr(1,name.size()-1);
+  }
+  std::string fname(fpath+name);
+  // Variables to be read in
   pcl::PointXYZ p;
   pcl::Normal n;
-  unsigned int num;
-  unsigned int ind;
-  std::vector<unsigned int> inds; 
-  Patch patch;
-  
+  size_t num;
+  int ind;
+  std::vector<int> inds; 
+ 
+  // K-D tree search
+  int K = 1;
+  std::vector<int> pointIdxNKNSearch(K);
+  std::vector<float> pointNKNSquaredDistance(K);
+       
   ////////// READ FILE ///////////
   std::string line;
   std::ifstream file;
-  file.open(fname);
-  unsigned int NUM
+  file.open(fname.c_str());
+  size_t NUM;
   if (file.is_open()){
     getline(file,line);
     if (line.compare(0,7,"PATCHES")!=0){
@@ -74,6 +90,7 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
     ss.clear();
     line.clear();
     while (NUM>0){
+      Patch patch;
       getline(file,line); // PATCHS
       line.clear();
       getline(file,line); // X Y Z 1
@@ -120,13 +137,8 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
       patch.setNImages(num);
       patch.setInds(inds);
 
-      // K-D tree search
-      int K = 1;
-      std::vector<int> pointIdxNKNSearch(K);
-      std::vector<float> pointNKNSquaredDistance(K);
-      
       if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-        if( patch == points_[ pointIdxNKNSearch[0] ] ){
+        if( (patch) == points_[ pointIdxNKNSearch[0] ] ){
           patch.setPointInd(pointIdxNKNSearch[0]);
           patches_.push_back(patch);
         }
@@ -134,11 +146,61 @@ bool Cloud::readPatchInfo(const std::string& fname)const{
       
       NUM--;
     }
+    file.close();
     return true;
   }
   return false;
-}
+} // readPatchInfo
 
-bool Cloud::plyWriteHeader();
-bool Cloud::plyWriteData();
-bool Cloud::plyWtite();
+
+// fpath is path to pmvs
+bool Cloud::readCameras(const std::string& fpath){
+  std::string name("/txt");
+  if (fpath.compare(fpath.size()-1,1,"/")){
+    name = name.substr(1,name.size()-1);
+  }
+  
+  int ncams = 48;
+  Eigen::MatrixXd camera(3,4);
+  std::string fname;
+  std::string strnum;
+  std::string str0s = "000000";
+  std::string str0 = "0";
+  int r,c;
+  
+  // File reading stuff
+  std::string line;
+  std::ifstream file;
+  std::istringstream ss(line);
+  std::stringstream ss2;
+  for (int i=0;i<ncams;++i){
+    ss2 << i;
+    strnum = ss2.str();
+    // Building filename
+    if (i<10){
+      strnum = str0 + strnum;
+    }
+    fname = fpath + name + str0s + strnum + ".txt";
+    // Reading file
+    file.open(fname.c_str());
+    if (file.is_open()){
+      getline(file,line); // CONTOUR
+      line.clear();
+      // Read file into matrix
+      r = 0;
+      while(getline(file,line)){
+        ss.str(line);
+        c = 0;
+        while(ss >> camera(r,c)) c++;
+        r++;
+        ss.clear();
+        line.clear();
+      }
+      cameras_.at(i) = camera;
+    } else { // if file is open
+      return false;
+    }
+    file.close();
+  } // Camera loop (0-47)
+  return true;
+} // readCameras

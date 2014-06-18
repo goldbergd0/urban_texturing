@@ -27,6 +27,10 @@ endif()
 #include_directories(${IMMERSIVE_GAMING_BINARY_DIR})
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
+
 
 set(CMAKE_CXX_FLAGS "-Wall -g")
 if (cmake_build_type_tolower STREQUAL "release")
@@ -40,6 +44,7 @@ add_library(urban_texture ${SOURCES} ${HEADERS})
 
 add_executable(main main.cpp)
 target_link_libraries(main urban_texture)
+target_link_libraries(main ${PCL_LIBRARIES})
 #target_link_libraries(illumipong ${GLUT_LIBRARY})
 #target_link_libraries(illumipong ${OPENGL_LIBRARIES})
 #target_link_libraries(illumipong ${OpenCV_LIBRARIES}

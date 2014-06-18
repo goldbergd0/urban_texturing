@@ -1,8 +1,6 @@
 // Dan Goldberg
 // Cloud object
 /**
-  Reads and writes PLY files
-  Can add triangles and UV coords
   
 */
 
@@ -15,45 +13,49 @@
 #include <sstream>
 #include <vector>
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <Eigen/Dense>
 
-#include <pcl/io/ply_io.h>
-#include <pcl/PolygonMesh.h>
-#include <pcl/io/point_cloud.h>
+//#include <pcl/io/point_cloud.h>
+//#include <pcl/io/vtk_io.h> 
+//#include <pcl/io/vtk_lib_io.h> 
+//#include <pcl/io/ply.h> 
+#include <pcl/io/ply_io.h> 
 #include <pcl/point_cloud.h>
+#include <pcl/PolygonMesh.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/io/vtk_lib_io.h>
 #include <pcl/point_types.h>
+
+#include "../aux/patch.h"
 
 class Cloud{
 public:
   Cloud();
-  Cloud(CloudInfo info, std::string name);
-  Cloud(std::string name, CloudInfo info);
+//  Cloud(CloudInfo info, std::string name);
+  Cloud(const Cloud& c);
   virtual ~Cloud();
 
   pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
   pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
   std::vector<Patch> getPatches()const{return patches_;};
-  std::vector<Eigen::MatrixXd(3,4)> getCameras()const{return cameras_;};
+  std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
+  size_t getN()const{return N_;};
 
-  bool readPly(const std::string& fname)const;
-  bool readPatches(const std::string& fname)const;
-  bool readCameras(const std::string& fname)const;
+  bool readPly(const std::string& fname);
+  bool readPatchInfo(const std::string& fname);
+  bool readCameras(const std::string& fname);
   
-  bool plyWriteHeader(const std::string& fname)const;
-  bool plyWriteData(const std::string& fname)const;
-  bool plyWrite(const std::string& fname)const;
-
 private:
-  unsigned int N_;
+  size_t N_;
   pcl::PointCloud<pcl::PointXYZ> points_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
-  std::vector<Eigen::MatrixXd(3,4)> cameras_;
+  std::vector<Eigen::MatrixXd> cameras_;
 
-}
+};
 
 #endif

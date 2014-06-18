@@ -19,27 +19,27 @@ public:
   pcl::PointXYZ getPoint()const {return point_;};
   size_t getPointInd()const{return pointInd_;};
   pcl::Normal getNormal()const {return normal_;};
-  unsigned int getNImages()const {return nImgs_;};
-  std::vector<unsigned int> getInds()const {return inds_;};
+  int getNImages()const {return nImgs_;};
+  std::vector<int> getInds()const {return inds_;};
   
   void setPoint(pcl::PointXYZ p) {point_=p;};
   void setPointInd(size_t i){pointInd_=i;};
   void setNormal(pcl::Normal n) {normal_=n;};
-  void setNImages(unsigned int N) {nImgs_=N;};
-  void setInds(std::vector<unsigned int> inds){inds_=inds;};
+  void setNImages(int N) {nImgs_=N;};
+  void setInds(std::vector<int> inds){inds_=inds;};
   
   Patch& operator= (const Patch& p);
   
-  friend bool operator==(Patch& p1, pcl::PointXYZ p2);
-  friend bool operator==(pcl::PointXYZ p1, Patch& p2);
-  friend bool operator!=(Patch& p1, pcl::PointXYZ p2);
-  friend bool operator!=(pcl::PointXYZ p1, Patch& p2);
+  friend bool operator==(const Patch& p1,const pcl::PointXYZ& p2);
+  friend bool operator==(const pcl::PointXYZ& p1,const Patch& p2);
+  friend bool operator!=(const Patch& p1,const pcl::PointXYZ& p2);
+  friend bool operator!=(const pcl::PointXYZ& p1,const Patch& p2);
 
 private:
   pcl::PointXYZ point_;
   size_t pointInd_;
   pcl::Normal normal_;
-  unsigned int nImgs_;
-  std::vector<unsigned int> inds_;
+  int nImgs_;
+  std::vector<int> inds_;
 };
 #endif
