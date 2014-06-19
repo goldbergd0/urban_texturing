@@ -37,10 +37,10 @@ public:
 //  Cloud(CloudInfo info, std::string name);
   MyCloud(const MyCloud& c);
   virtual ~MyCloud();
-  pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
   //pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
-  pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   //pcl::KdTree<pcl::PointXYZ> getTree()const{return kdtree_;};
+  pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
+  pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
   std::vector<Patch> getPatches()const{return patches_;};
   std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};

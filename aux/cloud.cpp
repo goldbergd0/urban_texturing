@@ -209,3 +209,15 @@ bool MyCloud::readCameras(const std::string& fpath){
   } // Camera loop (0-47)
   return true;
 } // readCameras
+
+std::string MyCloud::toString()const{
+  std::string outStr("My Cloud Object: ");
+  std::string tab("\t");
+  std::string newl("\n");
+  //std::string cloudsz(points_->points.size());
+   
+  
+  
+  
+  return outStr;
+}

@@ -32,7 +32,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 
 
-set(CMAKE_CXX_FLAGS "-Wall -g")
+set(CMAKE_CXX_FLAGS "-Wall -g -Wno-deprecated")
 if (cmake_build_type_tolower STREQUAL "release")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 endif()

@@ -16,8 +16,9 @@ int main() {
   
   MyCloud c;
   
-  c.readPly(dir+plyname);
-  c.readPatchInfo(dir);
-  c.readCameras(dir);
+  std::cout<<c.readPly(dir+plyname)<<"\n";
+  std::cout<<c.readPatchInfo(dir)<<"\n";
+  std::cout<<c.readCameras(dir)<<"\n";
+  
   
 }
