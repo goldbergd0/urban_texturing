@@ -83,6 +83,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   std::ifstream file;
   file.open(fname.c_str());
   size_t NUM;
+  size_t origNum;
   if (file.is_open()){
     getline(file,line);
     if (line.compare(0,7,"PATCHES")!=0){
@@ -92,9 +93,12 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     getline(file,line);
     std::istringstream ss(line);
     ss >> NUM;
+    origNum = NUM;
     ss.clear();
     line.clear();
-    while (NUM>0){
+    int i = 0;
+    while (NUM>0 && i<1000){
+      i++;
       Patch patch;
       getline(file,line); // PATCHS
       line.clear();
@@ -148,7 +152,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
           patches_.push_back(patch);
         }
       }
-      
+      //patches_.push_back(patch);
       NUM--;
     }
     file.close();
@@ -160,13 +164,14 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
 
 // fpath is path to pmvs
 bool MyCloud::readCameras(const std::string& fpath){
-  std::string name("/txt");
-  if (fpath.compare(fpath.size()-1,1,"/")){
+  std::string name("txt/");
+  /*if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
   }
-  
+  */
   int ncams = 48;
   Eigen::MatrixXd camera(3,4);
+  cameras_ = 
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -186,6 +191,7 @@ bool MyCloud::readCameras(const std::string& fpath){
       strnum = str0 + strnum;
     }
     fname = fpath + name + str0s + strnum + ".txt";
+    std::cout<<fname<<"\n";
     // Reading file
     file.open(fname.c_str());
     if (file.is_open()){
