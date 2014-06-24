@@ -69,9 +69,10 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   // Variables to be read in
   pcl::PointXYZ p;
   pcl::Normal n;
-  size_t num;
+  size_t numImg;
   int ind;
   std::vector<int> inds; 
+  size_t numPatch;
  
   // K-D tree search
   int K = 1;
@@ -79,84 +80,79 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   std::vector<float> pointNKNSquaredDistance(K);
        
   ////////// READ FILE ///////////
-  std::string line;
-  std::ifstream file;
-  file.open(fname.c_str());
-  size_t NUM;
-  size_t origNum;
-  if (file.is_open()){
-    getline(file,line);
-    if (line.compare(0,7,"PATCHES")!=0){
-      return false;
-    }
-    line.clear();
-    getline(file,line);
-    std::istringstream ss(line);
-    ss >> NUM;
-    origNum = NUM;
-    ss.clear();
-    line.clear();
-    while (NUM>0){
-      Patch patch;
-      getline(file,line); // PATCHS
-      line.clear();
-      getline(file,line); // X Y Z 1
-      ss.str(line);
-      //  pcl::PointXYZ pt; 
-      //  pt.getVector3fMap() = anotherVec3f; 
-      ss >> p.x;
-      ss >> p.y;
-      ss >> p.z;
-      ss.clear();
-      line.clear();
-      getline(file,line); // Nx Ny Nz 0
-      ss.str(line);
-      ss >> n.normal_x;
-      ss >> n.normal_y;
-      ss >> n.normal_z;
-      ss.clear();
-      line.clear();
-      getline(file,line); // goodness debug debug
-      line.clear();
-      getline(file,line); // N (images point visible in)
-      ss.str(line);
-      ss >> num;
-      ss.clear();
-      line.clear();
-      getline(file,line); // N number of image indices
-      ss.str(line);
-      // from 
-      // http://stackoverflow.com/questions/455483/c-going-from-string-to-stringstream-to-vectorint
-      //      inds = (istream_iterator<unsigned int>(ss)),
-      //      istream_iterator<unsigned int>();
-      while (ss >> ind) inds.push_back(ind);
-      ss.clear();
-      line.clear();
-      getline(file,line); // N2 (textures don't agree well)
-      line.clear();
-      getline(file,line); // N2 number of image indices
-      line.clear();
-      getline(file,line); // [EMPTY]
-      line.clear();
-      
-      patch.setPoint(p);
-      patch.setNormal(n);
-      patch.setNImages(num);
-      patch.setInds(inds);
-
-      if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-        if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
-          patch.setPointInd(pointIdxNKNSearch[0]);
-          patches_.push_back(patch);
-        }
-      }
-      //patches_.push_back(patch);
-      NUM--;
-    }
+  std::ifstream file(fname.c_str());
+  if (file){
+    std::string contents;
+    file.seekg(0,std::ios::end);
+    contents.resize(file.tellg());
+    file.seekg(0,std::ios::beg);
+    file.read(&contents[0],contents.size());
+    if (!(file)) return false;
     file.close();
-    return true;
+  } else return false;
+  
+  size_t loc(0);
+  std::string line;
+  
+  line = grabline(loc,contents);
+  if (line.compare(0,7,"PATCHES")!=0){
+      return false;
   }
-  return false;
+//
+  line = grabline(loc,contents);
+  std::istringstream ss(line);
+  ss >> NUM;
+  ss.clear();
+  while (NUM>0){
+    Patch patch;
+    grabline(loc,contents); // PATCHS
+    line = grabline(loc,contents); // X Y Z 1
+    ss.str(line);
+    //  pcl::PointXYZ pt; 
+    //  pt.getVector3fMap() = anotherVec3f; 
+    ss >> p.x;
+    ss >> p.y;
+    ss >> p.z;
+    ss.clear();
+    line = grabline(loc,contents); // Nx Ny Nz 0
+    ss.str(line);
+    ss >> n.normal_x;
+    ss >> n.normal_y;
+    ss >> n.normal_z;
+    ss.clear();
+    grabline(loc,contents); // goodness debug debug
+    line = grabline(loc,contents); // N (images point visible in)
+    ss.str(line);
+    ss >> numImg;
+    ss.clear();
+    line = grabline(loc,contents); // N number of image indices
+    ss.str(line);
+    // from 
+    // http://stackoverflow.com/questions/455483/c-going-from-string-to-stringstream-to-vectorint
+    //      inds = (istream_iterator<unsigned int>(ss)),
+    //      istream_iterator<unsigned int>();
+    while (ss >> ind) inds.push_back(ind);
+    ss.clear();
+    grabline(loc,contents); // N2 (textures don't agree well)
+    grabline(loc,contents); // N2 number of image indices
+    grabline(loc,contents); // [EMPTY]
+    
+    patch.setPoint(p);
+    patch.setNormal(n);
+    patch.setNImages(numImg);
+    patch.setInds(inds);
+
+    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
+      if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
+        patch.setPointInd(pointIdxNKNSearch[0]);
+        patches_.push_back(patch);
+      }
+    }
+    //patches_.push_back(patch);
+    NUM--;
+  }
+  return true;
+
 } // readPatchInfo
 
 
@@ -193,7 +189,7 @@ bool MyCloud::readCameras(const std::string& fpath){
     // Reading file
     file.open(fname.c_str());
     if (file.is_open()){
-      getline(file,line); // CONTOUR
+      line = grablinegetline(file,line); // CONTOUR
       line.clear();
       // Read file into matrix
       r = 0;
@@ -213,6 +209,15 @@ bool MyCloud::readCameras(const std::string& fpath){
   } // Camera loop (0-47)
   return true;
 } // readCameras
+
+std::string MyCloud::grabline(size_t lineat, const std::string& contents)const{
+  std::string line;
+  size_t found = contents.find("\n");
+  line = contents.substr(lineat,found-lineat);
+  lineat = found+2;
+  
+  return line;
+}
 
 std::string MyCloud::toString()const{
   std::string outStr("My Cloud Object: ");
