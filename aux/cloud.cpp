@@ -96,9 +96,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     origNum = NUM;
     ss.clear();
     line.clear();
-    int i = 0;
-    while (NUM>0 && i<1000){
-      i++;
+    while (NUM>0){
       Patch patch;
       getline(file,line); // PATCHS
       line.clear();
