@@ -26,7 +26,8 @@ MyCloud::MyCloud(const MyCloud& c)
     cameras_(c.getCameras())
     {}
 
-MyCloud::~MyCloud(){}
+MyCloud::~MyCloud(){
+  }
 
 // fname is name and path
 bool MyCloud::readPly(const std::string& fname){
@@ -67,7 +68,8 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   }
   std::string fname(fpath+name);
   // Variables to be read in
-  float f;
+  Patch* patch;
+  float f(0);
   pcl::PointXYZ p;
   pcl::Normal n;
   size_t numImg;
@@ -75,6 +77,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   std::vector<int> inds; 
   size_t numPatch;
   std::string contents;
+  std::istringstream sswhole;
  
   // K-D tree search
   int K = 1;
@@ -91,22 +94,25 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     if (!(file)) return false;
     file.close();
   } else return false;
+  sswhole.str(contents);
   
-  size_t loc(0);
+  //size_t loc(0);
   std::string line;
   
-  line = grabline(loc,contents);
+  //line = grabline(loc,contents);
+  std::getline(sswhole,line);
   if (line.compare(0,7,"PATCHES")!=0){
       return false;
   }
-  line = grabline(loc,contents);
+  std::getline(sswhole,line);
   std::istringstream ss(line);
   ss >> numPatch;
   ss.str("");
   while (numPatch>0){
-    Patch patch;
-    line = grabline(loc,contents); // PATCHS
-    line = grabline(loc,contents); // X Y Z 1
+    ss.str("");
+    patch = new Patch();
+    std::getline(sswhole,line); // PATCHS
+    std::getline(sswhole,line); // X Y Z 1
     ss.str(line);
     //  pcl::PointXYZ pt; 
     //  pt.getVector3fMap() = anotherVec3f; 
@@ -115,18 +121,18 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     ss >> p.y;
     ss >> p.z;
     ss.str("");
-    line = grabline(loc,contents); // Nx Ny Nz 0
+    std::getline(sswhole,line); // Nx Ny Nz 0
     ss.str(line);
     ss >> n.normal_x;
     ss >> n.normal_y;
     ss >> n.normal_z;
     ss.str("");
-    grabline(loc,contents); // goodness debug debug
-    line = grabline(loc,contents); // N (images point visible in)
+    std::getline(sswhole,line); // goodness debug debug
+    std::getline(sswhole,line); // N (images point visible in)
     ss.str(line);
     ss >> numImg;
     ss.str("");
-    line = grabline(loc,contents); // N number of image indices
+    std::getline(sswhole,line); // N number of image indices
     ss.str(line);
     // from 
     // http://stackoverflow.com/questions/455483/c-going-from-string-to-stringstream-to-vectorint
@@ -134,18 +140,18 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     //      istream_iterator<unsigned int>();
     while (ss >> ind) inds.push_back(ind);
     ss.str("");
-    grabline(loc,contents); // N2 (textures don't agree well)
-    grabline(loc,contents); // N2 number of image indices
-    grabline(loc,contents); // [EMPTY]
+    std::getline(sswhole,line); // N2 (textures don't agree well)
+    std::getline(sswhole,line); // N2 number of image indices
+    std::getline(sswhole,line); // [EMPTY]
     
-    patch.setPoint(p);
-    patch.setNormal(n);
-    patch.setNImages(numImg);
-    patch.setInds(inds);
+    patch->setPoint(p);
+    patch->setNormal(n);
+    patch->setNImages(numImg);
+    patch->setInds(inds);
 
     if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-      if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
-        patch.setPointInd(pointIdxNKNSearch[0]);
+      if( (*patch) == points_->points.at( pointIdxNKNSearch[0] ) ){
+        patch->setPointInd(pointIdxNKNSearch[0]);
         patches_.push_back(patch);
       }
     }
@@ -165,8 +171,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   }
   */
   int ncams = 48;
-  Eigen::MatrixXd camera(3,4);
-  for (int i=0;i<ncams;i++) cameras_.push_back(camera);
+  Eigen::MatrixXd* camera;
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -179,6 +184,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   std::istringstream ss(line);
   std::stringstream ss2;
   for (int i=0;i<ncams;++i){
+    camera = new Eigen::MatrixXd(3,4);
     ss2.str("");
     ss2 << i;
     strnum = ss2.str();
@@ -198,12 +204,12 @@ bool MyCloud::readCameras(const std::string& fpath){
       while(getline(file,line)){
         ss.str(line);
         c = 0;
-        while(ss >> camera(r,c)) c++;
+        while(ss >> ((*camera)(r,c))) c++;
         r++;
         ss.str("");
         line.clear();
       }
-      cameras_.at(i) = camera;
+      cameras_.push_back(camera);
     } else { // if file is open
       return false;
     }
