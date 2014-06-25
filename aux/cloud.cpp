@@ -67,12 +67,14 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   }
   std::string fname(fpath+name);
   // Variables to be read in
+  float f;
   pcl::PointXYZ p;
   pcl::Normal n;
   size_t numImg;
   int ind;
   std::vector<int> inds; 
   size_t numPatch;
+  std::string contents;
  
   // K-D tree search
   int K = 1;
@@ -82,7 +84,6 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   ////////// READ FILE ///////////
   std::ifstream file(fname.c_str());
   if (file){
-    std::string contents;
     file.seekg(0,std::ios::end);
     contents.resize(file.tellg());
     file.seekg(0,std::ios::beg);
@@ -98,33 +99,33 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   if (line.compare(0,7,"PATCHES")!=0){
       return false;
   }
-//
   line = grabline(loc,contents);
   std::istringstream ss(line);
-  ss >> NUM;
-  ss.clear();
-  while (NUM>0){
+  ss >> numPatch;
+  ss.str("");
+  while (numPatch>0){
     Patch patch;
-    grabline(loc,contents); // PATCHS
+    line = grabline(loc,contents); // PATCHS
     line = grabline(loc,contents); // X Y Z 1
     ss.str(line);
     //  pcl::PointXYZ pt; 
     //  pt.getVector3fMap() = anotherVec3f; 
-    ss >> p.x;
+    if(!(ss >> f))return false;
+    p.x = f;
     ss >> p.y;
     ss >> p.z;
-    ss.clear();
+    ss.str("");
     line = grabline(loc,contents); // Nx Ny Nz 0
     ss.str(line);
     ss >> n.normal_x;
     ss >> n.normal_y;
     ss >> n.normal_z;
-    ss.clear();
+    ss.str("");
     grabline(loc,contents); // goodness debug debug
     line = grabline(loc,contents); // N (images point visible in)
     ss.str(line);
     ss >> numImg;
-    ss.clear();
+    ss.str("");
     line = grabline(loc,contents); // N number of image indices
     ss.str(line);
     // from 
@@ -132,7 +133,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     //      inds = (istream_iterator<unsigned int>(ss)),
     //      istream_iterator<unsigned int>();
     while (ss >> ind) inds.push_back(ind);
-    ss.clear();
+    ss.str("");
     grabline(loc,contents); // N2 (textures don't agree well)
     grabline(loc,contents); // N2 number of image indices
     grabline(loc,contents); // [EMPTY]
@@ -149,7 +150,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
       }
     }
     //patches_.push_back(patch);
-    NUM--;
+    numPatch--;
   }
   return true;
 
@@ -165,7 +166,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   */
   int ncams = 48;
   Eigen::MatrixXd camera(3,4);
-  cameras_ = 
+  for (int i=0;i<ncams;i++) cameras_.push_back(camera);
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -178,6 +179,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   std::istringstream ss(line);
   std::stringstream ss2;
   for (int i=0;i<ncams;++i){
+    ss2.str("");
     ss2 << i;
     strnum = ss2.str();
     // Building filename
@@ -185,11 +187,11 @@ bool MyCloud::readCameras(const std::string& fpath){
       strnum = str0 + strnum;
     }
     fname = fpath + name + str0s + strnum + ".txt";
-    std::cout<<fname<<"\n";
+    //std::cout<<fname<<"\n";
     // Reading file
     file.open(fname.c_str());
     if (file.is_open()){
-      line = grablinegetline(file,line); // CONTOUR
+      getline(file,line); // CONTOUR
       line.clear();
       // Read file into matrix
       r = 0;
@@ -198,7 +200,7 @@ bool MyCloud::readCameras(const std::string& fpath){
         c = 0;
         while(ss >> camera(r,c)) c++;
         r++;
-        ss.clear();
+        ss.str("");
         line.clear();
       }
       cameras_.at(i) = camera;
@@ -210,11 +212,11 @@ bool MyCloud::readCameras(const std::string& fpath){
   return true;
 } // readCameras
 
-std::string MyCloud::grabline(size_t lineat, const std::string& contents)const{
+std::string MyCloud::grabline(size_t& lineat, const std::string& contents)const{
   std::string line;
-  size_t found = contents.find("\n");
+  size_t found = contents.find("\n",lineat);
   line = contents.substr(lineat,found-lineat);
-  lineat = found+2;
+  lineat = found+1;
   
   return line;
 }

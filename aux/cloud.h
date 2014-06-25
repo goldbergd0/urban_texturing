@@ -50,7 +50,7 @@ public:
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
 
-  std::string grabline(size_t lineat, const std::string& contents)const;
+  std::string grabline(size_t& lineat, const std::string& contents)const;
   
   std::string toString()const;
   
