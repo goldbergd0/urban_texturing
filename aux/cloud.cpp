@@ -69,7 +69,6 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   std::string fname(fpath+name);
   // Variables to be read in
   Patch* patch;
-  float f(0);
   pcl::PointXYZ p;
   pcl::Normal n;
   size_t numImg;
@@ -108,30 +107,32 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   std::istringstream ss(line);
   ss >> numPatch;
   ss.str("");
+  ss.clear();
   while (numPatch>0){
-    ss.str("");
     patch = new Patch();
     std::getline(sswhole,line); // PATCHS
     std::getline(sswhole,line); // X Y Z 1
     ss.str(line);
     //  pcl::PointXYZ pt; 
     //  pt.getVector3fMap() = anotherVec3f; 
-    if(!(ss >> f))return false;
-    p.x = f;
+    ss >> p.x;
     ss >> p.y;
     ss >> p.z;
     ss.str("");
+    ss.clear();
     std::getline(sswhole,line); // Nx Ny Nz 0
     ss.str(line);
     ss >> n.normal_x;
     ss >> n.normal_y;
     ss >> n.normal_z;
     ss.str("");
+    ss.clear();
     std::getline(sswhole,line); // goodness debug debug
     std::getline(sswhole,line); // N (images point visible in)
     ss.str(line);
     ss >> numImg;
     ss.str("");
+    ss.clear();
     std::getline(sswhole,line); // N number of image indices
     ss.str(line);
     // from 
@@ -140,6 +141,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     //      istream_iterator<unsigned int>();
     while (ss >> ind) inds.push_back(ind);
     ss.str("");
+    ss.clear();
     std::getline(sswhole,line); // N2 (textures don't agree well)
     std::getline(sswhole,line); // N2 number of image indices
     std::getline(sswhole,line); // [EMPTY]
@@ -186,6 +188,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   for (int i=0;i<ncams;++i){
     camera = new Eigen::MatrixXd(3,4);
     ss2.str("");
+    ss2.clear();
     ss2 << i;
     strnum = ss2.str();
     // Building filename
@@ -207,6 +210,7 @@ bool MyCloud::readCameras(const std::string& fpath){
         while(ss >> ((*camera)(r,c))) c++;
         r++;
         ss.str("");
+        ss.clear();
         line.clear();
       }
       cameras_.push_back(camera);
