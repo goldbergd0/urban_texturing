@@ -150,14 +150,17 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     patch->setNormal(n);
     patch->setNImages(numImg);
     patch->setInds(inds);
-
-    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-      if( (*patch) == points_->points.at( pointIdxNKNSearch[0] ) ){
-        patch->setPointInd(pointIdxNKNSearch[0]);
-        patches_.push_back(patch);
-      }
-    }
-    //patches_.push_back(patch);
+    std::cout<<p<<"\n";
+//    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
+//      if( (*patch) == points_->points.at( pointIdxNKNSearch[0] ) ){
+//        patch->setPointInd(pointIdxNKNSearch[0]);
+//        patches_.push_back(patch);
+//      } else delete patch;
+//    } else {
+//      if (patch) delete patch;
+//    }
+    patches_.push_back(patch);
+    std::cout<<numPatch<<"\n";
     numPatch--;
   }
   return true;
