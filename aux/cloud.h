@@ -44,8 +44,8 @@ public:
   pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
   pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
-  boost::ptr_vector<Patch> getPatches()const{return patches_;};
-  boost::ptr_vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
+  std::vector<Patch> getPatches()const{return patches_;};
+  std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
   size_t getN()const{return N_;};
 
   bool readPly(const std::string& fname);
@@ -62,8 +62,8 @@ private:
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
   //pcl::KdTree<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
-  boost::ptr_vector<Patch> patches_;
-  boost::ptr_vector<Eigen::MatrixXd> cameras_;
+  std::vector<Patch> patches_;
+  std::vector<Eigen::MatrixXd> cameras_;
 
 };
 

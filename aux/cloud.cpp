@@ -68,7 +68,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   }
   std::string fname(fpath+name);
   // Variables to be read in
-  Patch* patch;
+  Patch patch;
   pcl::PointXYZ p;
   pcl::Normal n;
   size_t numImg;
@@ -109,7 +109,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   ss.str("");
   ss.clear();
   while (numPatch>0){
-    patch = new Patch();
+    patch = Patch();
     std::getline(sswhole,line); // PATCHS
     std::getline(sswhole,line); // X Y Z 1
     ss.str(line);
@@ -146,11 +146,10 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     std::getline(sswhole,line); // N2 number of image indices
     std::getline(sswhole,line); // [EMPTY]
     
-    patch->setPoint(p);
-    patch->setNormal(n);
-    patch->setNImages(numImg);
-    patch->setInds(inds);
-    std::cout<<p<<"\n";
+    patch.setPoint(p);
+    patch.setNormal(n);
+    patch.setNImages(numImg);
+    patch.setInds(inds);
 //    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
 //      if( (*patch) == points_->points.at( pointIdxNKNSearch[0] ) ){
 //        patch->setPointInd(pointIdxNKNSearch[0]);
@@ -160,7 +159,6 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
 //      if (patch) delete patch;
 //    }
     patches_.push_back(patch);
-    std::cout<<numPatch<<"\n";
     numPatch--;
   }
   return true;
@@ -176,7 +174,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   }
   */
   int ncams = 48;
-  Eigen::MatrixXd* camera;
+  Eigen::MatrixXd camera;
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -189,7 +187,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   std::istringstream ss(line);
   std::stringstream ss2;
   for (int i=0;i<ncams;++i){
-    camera = new Eigen::MatrixXd(3,4);
+    camera = Eigen::MatrixXd(3,4);
     ss2.str("");
     ss2.clear();
     ss2 << i;
@@ -210,7 +208,7 @@ bool MyCloud::readCameras(const std::string& fpath){
       while(getline(file,line)){
         ss.str(line);
         c = 0;
-        while(ss >> ((*camera)(r,c))) c++;
+        while(ss >> (camera(r,c))) c++;
         r++;
         ss.str("");
         ss.clear();
