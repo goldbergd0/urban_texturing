@@ -1,9 +1,20 @@
 // Dan Goldberg
-// Cloud class
+// World class
 
-#include "cloud.h"
+/*
+  The world class includes everything that is part of the environment:
+    point cloud
+    mesh
+    kdtree
+    vector of all patches
+    vector of all cameras
+    vector of all triangles
+    vector of all UV coords with those triangles
+*/
 
-MyCloud::MyCloud()
+#include "world.h"
+
+World::World()
   : N_(),
     points_(),
     kdtree_(),
@@ -17,7 +28,7 @@ Cloud::Cloud(unsigned int N)
     kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
     patches_(std::vector<Patch>(N)) {}
 */
-MyCloud::MyCloud(const MyCloud& c)
+World::World(const World& c)
   : N_(c.getN()),
     points_(c.getPoints()),
     kdtree_(c.getTree()),
@@ -26,11 +37,11 @@ MyCloud::MyCloud(const MyCloud& c)
     cameras_(c.getCameras())
     {}
 
-MyCloud::~MyCloud(){
+World::~World(){
   }
 
 // fname is name and path
-bool MyCloud::readPly(const std::string& fname){
+bool World::readPly(const std::string& fname){
   /*
   Example from http://www.pcl-users.org/Registering-PolygonMeshes-td4025472.html
   
@@ -61,7 +72,7 @@ bool MyCloud::readPly(const std::string& fname){
 }
 
 // fpath is path to (and including) PMVS
-bool MyCloud::readPatchInfo(const std::string& fpath){
+bool World::readPatchInfo(const std::string& fpath){
   std::string name("/models/option-0000.patch");
   if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
@@ -174,13 +185,13 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
 
 
 // fpath is path to pmvs
-bool MyCloud::readCameras(const std::string& fpath){
+bool World::readCameras(const std::string& fpath,const int& ncams){
   std::string name("txt/");
   /*if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
   }
   */
-  int ncams = 48;
+  cameras_ = std::vector<Eigen::MatrixXd>(ncams);
   Eigen::MatrixXd camera;
   std::string fname;
   std::string strnum;
@@ -220,7 +231,7 @@ bool MyCloud::readCameras(const std::string& fpath){
         ss.clear();
         line.clear();
       }
-      cameras_.push_back(camera);
+      cameras_[i]=(camera);
     } else { // if file is open
       return false;
     }
@@ -229,7 +240,7 @@ bool MyCloud::readCameras(const std::string& fpath){
   return true;
 } // readCameras
 
-std::string MyCloud::toString()const{
+std::string World::toString()const{
   std::string outStr("My Cloud Object: ");
   std::string tab("\t");
   std::string newl("\n");

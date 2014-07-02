@@ -4,8 +4,8 @@
   
 */
 
-#ifndef CLOUD_H_
-#define CLOUD_H_
+#ifndef WORLD_H_
+#define WORLD_H_
 
 #include <string>
 #include <iostream>
@@ -33,12 +33,12 @@
 
 #include "../aux/patch.h"
 
-class MyCloud{
+class World{
 public:
-  MyCloud();
+  World();
 //  Cloud(CloudInfo info, std::string name);
-  MyCloud(const MyCloud& c);
-  virtual ~MyCloud();
+  World(const World& c);
+  virtual ~World();
   //pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
   //pcl::KdTree<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
@@ -50,7 +50,7 @@ public:
 
   bool readPly(const std::string& fname);
   bool readPatchInfo(const std::string& fname);
-  bool readCameras(const std::string& fname);
+  bool readCameras(const std::string& fname,const int& ncams);
 
   std::string toString()const;
   
