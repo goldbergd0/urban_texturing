@@ -109,7 +109,8 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   ss >> numPatch;
   ss.str("");
   ss.clear();
-  patches_ = std::vector<Patch>(numPatch);
+  patches_ = std::vector<Patch>(N_);
+  int patchi(0);
   std::cin.get();
   for (size_t i=0;i<numPatch;i++){
     std::getline(sswhole,line); // PATCHS
@@ -152,21 +153,20 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     std::getline(sswhole,line); // N2 number of image indices
     std::getline(sswhole,line); // [EMPTY]
     
-    patches_[i].setPoint(p);
-    patches_[i].setNormal(n);
-    patches_[i].setNImages(numImg);
-    patches_[i].setInds(inds);
-    /*
     if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-      if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
-        patches_[i].setPointInd(pointIdxNKNSearch[0]);
-      } else {
-        badPatch.push_back(i);
+      //if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
+      if (pointNKNSquaredDistance[0] < 0.00000001){
+        patches_[patchi].setPoint(p);
+        patches_[patchi].setNormal(n);
+        patches_[patchi].setNImages(numImg);
+        patches_[patchi].setInds(inds);
+        patches_[patchi].setPointInd(pointIdxNKNSearch[0]);
+        patchi++;
+        // VERBOSE std::cout<<patchi<<": "<<p<<"\n";
       }
-    } else {
-      badPatch.push_back(i);
-    }*/
-    if (!(i%1000))std::cout<<i<<"\n";
+    }
+    
+    // VERBOSE if (!(i%100000))std::cout<<((int)(.5+100*(float)i/(float)numPatch))<<"\%\n";
   }
   return true;
 
@@ -204,7 +204,6 @@ bool MyCloud::readCameras(const std::string& fpath){
       strnum = str0 + strnum;
     }
     fname = fpath + name + str0s + strnum + ".txt";
-    //std::cout<<fname<<"\n";
     // Reading file
     file.open(fname.c_str());
     if (file.is_open()){
@@ -230,15 +229,6 @@ bool MyCloud::readCameras(const std::string& fpath){
   return true;
 } // readCameras
 
-std::string MyCloud::grabline(size_t& lineat, const std::string& contents)const{
-  std::string line;
-  size_t found = contents.find("\n",lineat);
-  line = contents.substr(lineat,found-lineat);
-  lineat = found+1;
-  
-  return line;
-}
-
 std::string MyCloud::toString()const{
   std::string outStr("My Cloud Object: ");
   std::string tab("\t");
@@ -249,4 +239,12 @@ std::string MyCloud::toString()const{
   
   
   return outStr;
+}
+
+bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
+  return ( (p1.x==p2.x) && (p1.y==p2.y) && p1.z==p2.z);
+}
+
+bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
+  return ( (p1.x!=p2.x) || (p1.y!=p2.y) || p1.z!=p2.z);
 }

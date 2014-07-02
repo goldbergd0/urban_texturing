@@ -52,9 +52,10 @@ public:
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
 
-  std::string grabline(size_t& lineat, const std::string& contents)const;
-  
   std::string toString()const;
+  
+  friend bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);
+  friend bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);
   
 private:
   size_t N_;

@@ -31,6 +31,10 @@ Patch& Patch::operator= (const Patch& p){
   return *this;
 }
  
+std::ostream& operator<<(std::ostream& out,const Patch& p){
+  out << p.getPoint();
+  return out;
+}
 bool operator==(const Patch& p1,const pcl::PointXYZ& p2){
   return ((p1.getPoint().x==p2.x) &&
           (p1.getPoint().y==p2.y) &&
