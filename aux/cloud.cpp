@@ -77,6 +77,7 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   size_t numPatch;
   std::string contents;
   std::istringstream sswhole;
+  std::vector<size_t> badPatch;
  
   // K-D tree search
   int K = 1;
@@ -108,9 +109,11 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
   ss >> numPatch;
   ss.str("");
   ss.clear();
-  while (numPatch>0){
-    patch = Patch();
+  patches_ = std::vector<Patch>(numPatch);
+  std::cin.get();
+  for (size_t i=0;i<numPatch;i++){
     std::getline(sswhole,line); // PATCHS
+    //std::cout<<line<<"\n";
     std::getline(sswhole,line); // X Y Z 1
     ss.str(line);
     //  pcl::PointXYZ pt; 
@@ -139,6 +142,9 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     // http://stackoverflow.com/questions/455483/c-going-from-string-to-stringstream-to-vectorint
     //      inds = (istream_iterator<unsigned int>(ss)),
     //      istream_iterator<unsigned int>();
+
+    // THISSSSSSS!!!!
+    inds = std::vector<int>();
     while (ss >> ind) inds.push_back(ind);
     ss.str("");
     ss.clear();
@@ -146,20 +152,21 @@ bool MyCloud::readPatchInfo(const std::string& fpath){
     std::getline(sswhole,line); // N2 number of image indices
     std::getline(sswhole,line); // [EMPTY]
     
-    patch.setPoint(p);
-    patch.setNormal(n);
-    patch.setNImages(numImg);
-    patch.setInds(inds);
-//    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
-//      if( (*patch) == points_->points.at( pointIdxNKNSearch[0] ) ){
-//        patch->setPointInd(pointIdxNKNSearch[0]);
-//        patches_.push_back(patch);
-//      } else delete patch;
-//    } else {
-//      if (patch) delete patch;
-//    }
-    patches_.push_back(patch);
-    numPatch--;
+    patches_[i].setPoint(p);
+    patches_[i].setNormal(n);
+    patches_[i].setNImages(numImg);
+    patches_[i].setInds(inds);
+    /*
+    if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
+      if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
+        patches_[i].setPointInd(pointIdxNKNSearch[0]);
+      } else {
+        badPatch.push_back(i);
+      }
+    } else {
+      badPatch.push_back(i);
+    }*/
+    if (!(i%1000))std::cout<<i<<"\n";
   }
   return true;
 
