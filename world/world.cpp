@@ -80,7 +80,7 @@ bool World::readPly(const std::string& fname){
 
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   triangles_ = std::vector<Triangle<Patch> >(N_);
-  
+  //http://docs.pointclouds.org/trunk/_vertices_8h_source.html
   
   return true;
 }
