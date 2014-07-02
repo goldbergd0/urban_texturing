@@ -33,7 +33,7 @@ class Triangle{
 // Template Definition
 template<typename T>
 Triangle<T>::Triangle()
-  :v0_(NULL),v1_(NULL),v2_(NULL) {}
+  :v0_(),v1_(),v2_() {}
 
 template<typename T>
 Triangle<T>::Triangle(const T& v0,const T& v1,const T& v2)

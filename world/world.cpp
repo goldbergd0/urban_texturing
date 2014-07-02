@@ -20,6 +20,7 @@ World::World()
     kdtree_(),
     mesh_(),
     patches_(),
+    triangles_(),
     cameras_(){}
 /*
 Cloud::Cloud(unsigned int N)
@@ -34,6 +35,7 @@ World::World(const int& nCams)
     kdtree_(),
     mesh_(),
     patches_(),
+    triangles_(),
     cameras_(std::vector<Camera>(nCams)){}
 
 World::World(const World& c)
@@ -42,6 +44,7 @@ World::World(const World& c)
     kdtree_(c.getTree()),
     mesh_(c.getMesh()),
     patches_(c.getPatches()),
+    triangles_(c.getTriangles()),
     cameras_(c.getCameras())
     {}
 
@@ -74,6 +77,9 @@ bool World::readPly(const std::string& fname){
   N_ = cloud.points.size();
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (points_);
   kdtree_.setInputCloud(points_);
+
+  std::vector<pcl::Vertices>verts(mesh_.polygons);
+  triangles_ = std::vector<Triangle<Patch> >(N_);
   
   
   return true;
@@ -130,7 +136,7 @@ bool World::readPatchInfo(const std::string& fpath){
   ss.clear();
   patches_ = std::vector<Patch>(N_);
   int patchi(0);
-  std::cin.get();
+  //std::cin.get();
   for (size_t i=0;i<numPatch;i++){
     std::getline(sswhole,line); // PATCHS
     //std::cout<<line<<"\n";
@@ -185,7 +191,7 @@ bool World::readPatchInfo(const std::string& fpath){
       }
     }
     
-    // VERBOSE if (!(i%100000))std::cout<<((int)(.5+100*(float)i/(float)numPatch))<<"\%\n";
+    if (!(i%100000))std::cout<<((int)(.5+100*(float)i/numPatch))<<"\%\n";
   }
   return true;
 
@@ -201,7 +207,7 @@ bool World::readCameras(const std::string& fpath){
   */
   //cameras_ = std::vector<Eigen::MatrixXd>(ncams);
   int ncams(cameras_.size());
-  Eigen::MatrixXd mat;
+  Eigen::MatrixXf mat;
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -214,7 +220,7 @@ bool World::readCameras(const std::string& fpath){
   std::istringstream ss(line);
   std::stringstream ss2;
   for (int i=0;i<ncams;++i){
-    mat = Eigen::MatrixXd(3,4);
+    mat = Eigen::MatrixXf(3,4);
     ss2.str("");
     ss2.clear();
     ss2 << i;

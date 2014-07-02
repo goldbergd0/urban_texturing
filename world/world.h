@@ -28,11 +28,13 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_lib_io.h>
+#include <pcl/Vertices.h>
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "../aux/patch.h"
 #include "../aux/camera.h"
+#include "../aux/triangle.h"
 
 class World{
 public:
@@ -48,6 +50,7 @@ public:
   std::vector<Patch> getPatches()const{return patches_;};
   //std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
   std::vector<Camera> getCameras()const{return cameras_;};
+  std::vector<Triangle<Patch> > getTriangles()const{return triangles_;};
   size_t getN()const{return N_;};
 
   void setNCameras(const int& n){cameras_=std::vector<Camera>(n);};
@@ -68,6 +71,7 @@ private:
   //pcl::KdTree<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
+  std::vector<Triangle<Patch> > triangles_;
   std::vector<Camera> cameras_;
 
 };
