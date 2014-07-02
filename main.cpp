@@ -21,11 +21,11 @@ int main() {
   
   int totNimgs(48);
   
-  World w;
+  World w(totNimgs);
   
-  std::cout<<w.readPly(dir+plyname)<<"\n";
-  std::cout<<w.readPatchInfo(dir)<<"\n";
-  std::cout<<w.readCameras(dir,totNimgs)<<"\n";
+  std::cout<<"Reading PLY: "<<w.readPly(dir+plyname)<<"\n";
+  std::cout<<"Reading Cameras: " << w.readCameras(dir)<<"\n";
+  std::cout<<"Reading Patch file: " << w.readPatchInfo(dir)<<"\n";
   
   
   

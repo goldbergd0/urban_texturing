@@ -32,25 +32,29 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "../aux/patch.h"
+#include "../aux/camera.h"
 
 class World{
 public:
   World();
+  World(const int& nCams);
 //  Cloud(CloudInfo info, std::string name);
   World(const World& c);
   virtual ~World();
-  //pcl::PointCloud<pcl::PointXYZ> getPoints()const{return points_;};
-  //pcl::KdTree<pcl::PointXYZ> getTree()const{return kdtree_;};
+
   pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
   pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
   std::vector<Patch> getPatches()const{return patches_;};
-  std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
+  //std::vector<Eigen::MatrixXd> getCameras()const{return cameras_;};
+  std::vector<Camera> getCameras()const{return cameras_;};
   size_t getN()const{return N_;};
+
+  void setNCameras(const int& n){cameras_=std::vector<Camera>(n);};
 
   bool readPly(const std::string& fname);
   bool readPatchInfo(const std::string& fname);
-  bool readCameras(const std::string& fname,const int& ncams);
+  bool readCameras(const std::string& fname);
 
   std::string toString()const;
   
@@ -64,7 +68,7 @@ private:
   //pcl::KdTree<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
-  std::vector<Eigen::MatrixXd> cameras_;
+  std::vector<Camera> cameras_;
 
 };
 

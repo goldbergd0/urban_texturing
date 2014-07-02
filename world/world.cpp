@@ -28,6 +28,14 @@ Cloud::Cloud(unsigned int N)
     kdtree_(new pcl::KdTreeFLANN<pcl::PointXYZ>),
     patches_(std::vector<Patch>(N)) {}
 */
+World::World(const int& nCams)
+  : N_(),
+    points_(),
+    kdtree_(),
+    mesh_(),
+    patches_(),
+    cameras_(std::vector<Camera>(nCams)){}
+
 World::World(const World& c)
   : N_(c.getN()),
     points_(c.getPoints()),
@@ -185,14 +193,15 @@ bool World::readPatchInfo(const std::string& fpath){
 
 
 // fpath is path to pmvs
-bool World::readCameras(const std::string& fpath,const int& ncams){
+bool World::readCameras(const std::string& fpath){
   std::string name("txt/");
   /*if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
   }
   */
-  cameras_ = std::vector<Eigen::MatrixXd>(ncams);
-  Eigen::MatrixXd camera;
+  //cameras_ = std::vector<Eigen::MatrixXd>(ncams);
+  int ncams(cameras_.size());
+  Eigen::MatrixXd mat;
   std::string fname;
   std::string strnum;
   std::string str0s = "000000";
@@ -205,7 +214,7 @@ bool World::readCameras(const std::string& fpath,const int& ncams){
   std::istringstream ss(line);
   std::stringstream ss2;
   for (int i=0;i<ncams;++i){
-    camera = Eigen::MatrixXd(3,4);
+    mat = Eigen::MatrixXd(3,4);
     ss2.str("");
     ss2.clear();
     ss2 << i;
@@ -225,18 +234,18 @@ bool World::readCameras(const std::string& fpath,const int& ncams){
       while(getline(file,line)){
         ss.str(line);
         c = 0;
-        while(ss >> (camera(r,c))) c++;
+        while(ss >> (mat(r,c))) c++;
         r++;
         ss.str("");
         ss.clear();
         line.clear();
       }
-      cameras_[i]=(camera);
+      cameras_[i].setMat(mat);
     } else { // if file is open
       return false;
     }
     file.close();
-  } // Camera loop (0-47)
+  } // Camera loop 
   return true;
 } // readCameras
 
