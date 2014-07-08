@@ -29,7 +29,8 @@ int main() {
   std::cout << w.readCameras(dir)<<"\n";
   std::cout <<"Reading Patch file: ";
   std::cout << w.readPatchInfo(dir)<<"\n";
-  
+  std::cout <<"Buildling Triangles: ";
+  std::cout << w.buildTriangles()<<"\n";
   
   
   /* THIS WORKS!?!?!?!!

@@ -58,12 +58,14 @@ public:
   bool readPly(const std::string& fname);
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
+  bool buildTriangles();
 
+  Patch findPatch(const size_t& ind)const;
   std::string toString()const;
   
-  friend bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);
+/*  friend bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);
   friend bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);
-  
+ */ 
 private:
   size_t N_;
   pcl::PointCloud<pcl::PointXYZ>::Ptr points_;

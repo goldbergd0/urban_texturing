@@ -77,11 +77,29 @@ bool World::readPly(const std::string& fname){
   N_ = cloud.points.size();
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (points_);
   kdtree_.setInputCloud(points_);
-
+  /*
   std::vector<pcl::Vertices>verts(mesh_.polygons);
-  triangles_ = std::vector<Triangle<Patch> >(N_);
+  uint32_t num;
+  uint32_t min(1000000);
+  uint32_t max(0);
+  for (size_t i=0; i < verts.size(); i++){
+    //std::cout<<verts[i]<<"\n";
+    for (int ii=0;ii<3;ii++){
+      num = verts[i].vertices[ii];
+      if (num<min){
+        min=num;
+      }
+      if (num>max){
+        max=num;
+      }
+    }
+  }
+  std::cout<<"min: "<<min<<"\n";
+  std::cout<<"max: "<<max<<"\n";
+  std::cout<<"N: "<<N_<<"\n";*/
+  triangles_ = std::vector<Triangle<Patch> >(mesh_.polygons.size());
   //http://docs.pointclouds.org/trunk/_vertices_8h_source.html
-  
+
   return true;
 }
 
@@ -177,9 +195,9 @@ bool World::readPatchInfo(const std::string& fpath){
     std::getline(sswhole,line); // N2 (textures don't agree well)
     std::getline(sswhole,line); // N2 number of image indices
     std::getline(sswhole,line); // [EMPTY]
-    
     if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
       //if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
+      std::cout<<"point idx: "<<pointIdxNKNSearch[0]<<"\n";
       if (pointNKNSquaredDistance[0] < 0.00000001){
         patches_[patchi].setPoint(p);
         patches_[patchi].setNormal(n);
@@ -187,6 +205,7 @@ bool World::readPatchInfo(const std::string& fpath){
         patches_[patchi].setInds(inds);
         patches_[patchi].setPointInd(pointIdxNKNSearch[0]);
         patchi++;
+
         // VERBOSE std::cout<<patchi<<": "<<p<<"\n";
       }
     }
@@ -255,22 +274,53 @@ bool World::readCameras(const std::string& fpath){
   return true;
 } // readCameras
 
-std::string World::toString()const{
-  std::string outStr("My Cloud Object: ");
-  std::string tab("\t");
-  std::string newl("\n");
-  //std::string cloudsz(points_->points.size());
-   
+bool World::buildTriangles(){
   
+  std::vector<pcl::Vertices>verts(mesh_.polygons);
+  Patch empty;
+  Patch p;
+  for (size_t i=0; i<verts.size(); i++){
+    p = findPatch(verts[i].vertices[0]);
+    if (p==empty) {
+      std::cout<<"Ind: "<<i<<"\n";
+      std::cout<<"looking for ind: " << verts[i].vertices[0]<<"\n";
+      return false;
+    }
+    triangles_[i].setv0(p);
   
+    p = findPatch(verts[i].vertices[1]);
+    if (p==empty) {
+      std::cout<<"Ind: "<<i<<"\n";
+      std::cout<<"looking for ind: " << verts[i].vertices[1]<<"\n";
+      return false;
+    }
+    triangles_[i].setv1(p);
+
+    p = findPatch(verts[i].vertices[2]);
+    if (p==empty){
+      std::cout<<"Ind: "<<i<<"\n";
+      std::cout<<"looking for ind: " << verts[i].vertices[2]<<"\n";
+      return false;
+    }
+    triangles_[i].setv2(p);
+  }
   
-  return outStr;
+  return true;
 }
 
-bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
+Patch World::findPatch(const size_t& ind)const{
+  for (size_t i=0;i<patches_.size();i++){
+    if (patches_[i]==ind){
+      return patches_[i];
+    }
+  }
+  return Patch();
+}
+
+/*bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
   return ( (p1.x==p2.x) && (p1.y==p2.y) && p1.z==p2.z);
 }
 
 bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
   return ( (p1.x!=p2.x) || (p1.y!=p2.y) || p1.z!=p2.z);
-}
+}*/

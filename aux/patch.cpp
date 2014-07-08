@@ -35,15 +35,29 @@ std::ostream& operator<<(std::ostream& out,const Patch& p){
   out << p.getPoint();
   return out;
 }
-bool operator==(const Patch& p1,const pcl::PointXYZ& p2){
-  return ((p1.getPoint().x==p2.x) &&
-          (p1.getPoint().y==p2.y) &&
-          (p1.getPoint().z==p2.z));
+
+
+bool operator==(const pcl::PointXYZ& p1,const pcl::PointXYZ& p2){
+  return ((p1.x==p2.x) &&
+          (p1.y==p2.y) &&
+          (p1.z==p2.z));
 }
+
+bool operator==(const Patch& p1,const pcl::PointXYZ& p2){
+  return (p1.getPoint() == p2);
+}
+
 bool operator==(const pcl::PointXYZ& p1,const Patch& p2){
-  return ((p2.getPoint().x==p1.x) &&
-          (p2.getPoint().y==p1.y) &&
-          (p2.getPoint().z==p1.z));
+  return (p2.getPoint() == p1);
+}
+
+bool operator==(const Patch& p,const size_t& ind){
+  return (p.getPointInd() == ind);
+}
+
+bool operator==(const Patch& p1,const Patch& p2){
+  return ((p1.getPoint()==p2.getPoint()) &&
+          (p1.getPointInd()==p2.getPointInd()));
 }
 
 bool operator!=(const Patch& p1,const pcl::PointXYZ& p2){

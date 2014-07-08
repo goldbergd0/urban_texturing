@@ -32,8 +32,11 @@ public:
   Patch& operator= (const Patch& p);
   
   friend std::ostream& operator<< (std::ostream& out,const Patch& p);
+  friend bool operator==(const pcl::PointXYZ& p1,const pcl::PointXYZ& p2);
   friend bool operator==(const Patch& p1,const pcl::PointXYZ& p2);
   friend bool operator==(const pcl::PointXYZ& p1,const Patch& p2);
+  friend bool operator==(const Patch& p,const size_t& ind);
+  friend bool operator==(const Patch& p1,const Patch& p2);
   friend bool operator!=(const Patch& p1,const pcl::PointXYZ& p2);
   friend bool operator!=(const pcl::PointXYZ& p1,const Patch& p2);
 
