@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <time.h>
 
 #include <Eigen/Dense>
 
@@ -16,6 +17,8 @@
 #include "world/world.h"
 
 int main() {
+  clock_t t1,t2;
+  t1 = clock();
   std::string dir("/home/dan/pmvs/");
   std::string plyname("models/option-0000-crop-alpha.ply");
   
@@ -32,6 +35,11 @@ int main() {
   std::cout <<"Buildling Triangles: ";
   std::cout << w.buildTriangles()<<"\n";
   
+  t2 = clock();
+  int time = (t2-t1)/CLOCKS_PER_SEC;
+  int minutes(time/60);
+  int seconds(time%60);
+  std::cout<<"Elapsed Time: "<<minutes<<" minutes and "<<seconds<< " seconds\n";
   
   /* THIS WORKS!?!?!?!!
   double a;

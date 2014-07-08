@@ -70,7 +70,6 @@ private:
   size_t N_;
   pcl::PointCloud<pcl::PointXYZ>::Ptr points_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
-  //pcl::KdTree<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
   std::vector<Triangle<Patch> > triangles_;

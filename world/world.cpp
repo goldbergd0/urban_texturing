@@ -197,8 +197,9 @@ bool World::readPatchInfo(const std::string& fpath){
     std::getline(sswhole,line); // [EMPTY]
     if ( kdtree_.nearestKSearch( p, K, pointIdxNKNSearch, pointNKNSquaredDistance) ) {
       //if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
-      std::cout<<"point idx: "<<pointIdxNKNSearch[0]<<"\n";
       if (pointNKNSquaredDistance[0] < 0.00000001){
+        //VERBOSE std::cout<<"ind4 "<<pointIdxNKNSearch[4]<<"\n";
+        std::cout<<p<<" ind: "<<pointIdxNKNSearch[0]<<"\n";
         patches_[patchi].setPoint(p);
         patches_[patchi].setNormal(n);
         patches_[patchi].setNImages(numImg);
