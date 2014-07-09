@@ -120,10 +120,11 @@ bool World::readPatchInfo(const std::string& fpath){
   size_t numPatch;
   std::string contents;
   std::istringstream sswhole;
-  std::vector<size_t> badPatch;
+  std::vector<size_t> allIndices;
+  size_t pointIndex;
  
   // K-D tree search
-  int K = 1;
+  int K = 4;
   std::vector<int> pointIdxNKNSearch(K);
   std::vector<float> pointNKNSquaredDistance(K);
        
@@ -153,6 +154,7 @@ bool World::readPatchInfo(const std::string& fpath){
   ss.str("");
   ss.clear();
   patches_ = std::vector<Patch>(N_);
+  allIndices = std::vector<size_t>(N_);
   int patchi(0);
   //std::cin.get();
   for (size_t i=0;i<numPatch;i++){
@@ -199,12 +201,13 @@ bool World::readPatchInfo(const std::string& fpath){
       //if( patch == points_->points.at( pointIdxNKNSearch[0] ) ){
       if (pointNKNSquaredDistance[0] < 0.00000001){
         //VERBOSE std::cout<<"ind4 "<<pointIdxNKNSearch[4]<<"\n";
-        std::cout<<p<<" ind: "<<pointIdxNKNSearch[0]<<"\n";
+        //VERBOSE std::cout<<p<<" ind: "<<pointIdxNKNSearch[0]<<"\n";
+        pointIndex=getGoodIndex(pointIdxNKNSearch,allIndices);
         patches_[patchi].setPoint(p);
         patches_[patchi].setNormal(n);
         patches_[patchi].setNImages(numImg);
         patches_[patchi].setInds(inds);
-        patches_[patchi].setPointInd(pointIdxNKNSearch[0]);
+        patches_[patchi].setPointInd(pointIndex);
         patchi++;
 
         // VERBOSE std::cout<<patchi<<": "<<p<<"\n";
@@ -213,6 +216,20 @@ bool World::readPatchInfo(const std::string& fpath){
     
     if (!(i%100000))std::cout<<((int)(.5+100*(float)i/numPatch))<<"\%\n";
   }
+  
+  /* VERBOSE
+  size_t max(0),wheremax(0),unique(0);
+  for (size_t i=0;i<allIndices.size();i++){
+    if (allIndices[i]>max){
+      max=allIndices[i];
+      wheremax=i;
+    }
+    if (allIndices[i]>0) unique++;
+  }
+  std::cout<<"Max: "<<max<<"\n";
+  std::cout<<"Where: "<<wheremax<<"\n";
+  std::cout<<"# Unique: "<<unique<<"\n";
+  */
   return true;
 
 } // readPatchInfo
@@ -307,6 +324,19 @@ bool World::buildTriangles(){
   }
   
   return true;
+}
+
+int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const{
+  
+  int ind;
+  for (size_t i=0;i<inds.size();++i){
+    ind = inds[i];
+    if (!(allIndices[ind]>0)){
+      allIndices[ind]++;
+      return ind;
+    }
+  }
+  return -1;
 }
 
 Patch World::findPatch(const size_t& ind)const{

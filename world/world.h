@@ -60,6 +60,7 @@ public:
   bool readCameras(const std::string& fname);
   bool buildTriangles();
 
+  int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
   std::string toString()const;
   
