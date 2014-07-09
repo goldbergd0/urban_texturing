@@ -27,7 +27,7 @@ int main() {
   int totNimgs(48);
   
   World w(totNimgs);
-  /*
+  
   std::cout <<"Reading PLY: ";
   std::cout <<w.readPly(dir+plyname)<<"\n";
   std::cout <<"Reading Cameras: ";
@@ -36,7 +36,8 @@ int main() {
   std::cout << w.readPatchInfo(dir)<<"\n";
   std::cout <<"Buildling Triangles: ";
   std::cout << w.buildTriangles()<<"\n";
-  */
+  std::cout <<"Map UV: ";
+  std::cout << w.mapUV()<<"\n";
 
   /*http://opencv-srf.blogspot.com/2013/06/load-display-image.html
   cv::Mat img = cv::imread("/home/dan/pmvs/visualize/00000000.jpg",CV_LOAD_IMAGE_UNCHANGED);

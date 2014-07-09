@@ -59,6 +59,7 @@ public:
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
   bool buildTriangles();
+  bool mapUV();
 
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
@@ -74,6 +75,7 @@ private:
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
   std::vector<Triangle<Patch> > triangles_;
+  std::vector<Triangle<Eigen::Vector2f> > uv_;
   std::vector<Camera> cameras_;
 
 };

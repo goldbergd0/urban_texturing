@@ -13,7 +13,10 @@
 */
 
 #include "world.h"
+/**
+  
 
+*/
 World::World()
   : N_(),
     points_(),
@@ -298,17 +301,18 @@ bool World::buildTriangles(){
   for (size_t i=0; i<verts.size(); i++){
     p = findPatch(verts[i].vertices[0]);
     triangles_[i].setv0(p);
-  
+
     p = findPatch(verts[i].vertices[1]);
     triangles_[i].setv1(p);
 
     p = findPatch(verts[i].vertices[2]);
     triangles_[i].setv2(p);
 
-    if (!(i%((int)verts.size()/20))) std::cout<<(int)(.5+100*(float)i/verts.size())<<"%\n";
+    if (!(i%((int)verts.size()/20))){
+       std::cout<<(int)(.5+100*(float)i/verts.size())<<"%\n";
+    }
   }
   
-  return true;
 /* 
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   Patch empty;
@@ -339,8 +343,8 @@ bool World::buildTriangles(){
     triangles_[i].setv2(p);
   }
   
-  return true;
 */
+  return true;
 }
 
 int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const{
