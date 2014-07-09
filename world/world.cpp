@@ -155,7 +155,7 @@ bool World::readPatchInfo(const std::string& fpath){
   ss.clear();
   patches_ = std::vector<Patch>(N_);
   allIndices = std::vector<size_t>(N_);
-  int patchi(0);
+//  int patchi(0);
   //std::cin.get();
   for (size_t i=0;i<numPatch;i++){
     std::getline(sswhole,line); // PATCHS
@@ -203,12 +203,11 @@ bool World::readPatchInfo(const std::string& fpath){
         //VERBOSE std::cout<<"ind4 "<<pointIdxNKNSearch[4]<<"\n";
         //VERBOSE std::cout<<p<<" ind: "<<pointIdxNKNSearch[0]<<"\n";
         pointIndex=getGoodIndex(pointIdxNKNSearch,allIndices);
-        patches_[patchi].setPoint(p);
-        patches_[patchi].setNormal(n);
-        patches_[patchi].setNImages(numImg);
-        patches_[patchi].setInds(inds);
-        patches_[patchi].setPointInd(pointIndex);
-        patchi++;
+        patches_[pointIndex].setPoint(p);
+        patches_[pointIndex].setNormal(n);
+        patches_[pointIndex].setNImages(numImg);
+        patches_[pointIndex].setInds(inds);
+        patches_[pointIndex].setPointInd(pointIndex);
 
         // VERBOSE std::cout<<patchi<<": "<<p<<"\n";
       }
@@ -293,7 +292,24 @@ bool World::readCameras(const std::string& fpath){
 } // readCameras
 
 bool World::buildTriangles(){
+ 
+  std::vector<pcl::Vertices>verts(mesh_.polygons);
+  Patch p;
+  for (size_t i=0; i<verts.size(); i++){
+    p = findPatch(verts[i].vertices[0]);
+    triangles_[i].setv0(p);
   
+    p = findPatch(verts[i].vertices[1]);
+    triangles_[i].setv1(p);
+
+    p = findPatch(verts[i].vertices[2]);
+    triangles_[i].setv2(p);
+
+    if (!(i%((int)verts.size()/20))) std::cout<<(int)(.5+100*(float)i/verts.size())<<"%\n";
+  }
+  
+  return true;
+/* 
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   Patch empty;
   Patch p;
@@ -324,6 +340,7 @@ bool World::buildTriangles(){
   }
   
   return true;
+*/
 }
 
 int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const{
@@ -340,12 +357,15 @@ int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIn
 }
 
 Patch World::findPatch(const size_t& ind)const{
+  return patches_[ind];
+/*  
   for (size_t i=0;i<patches_.size();i++){
     if (patches_[i]==ind){
       return patches_[i];
     }
   }
   return Patch();
+*/
 }
 
 /*bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
