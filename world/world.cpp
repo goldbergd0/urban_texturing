@@ -349,6 +349,11 @@ bool World::mapLocalUV(){
   Eigen::Vector2f uv(Eigen::Vector2f::Zero());
   int imnum(0);
   uvl_t tempuv;
+  Camera cam;
+  Triangle<Patch> tri;
+  Patch pat;
+  pcl::PointXYZ p;
+  
   for (size_t i=0;i<triangles_.size();i++){
     imnum = getBestImage(triangles_[i]);
     if (imnum<0){
@@ -357,7 +362,12 @@ bool World::mapLocalUV(){
       return false;
     }
     for (int iv=0;iv<3;iv++){
-      uv = cameras_[i].project(triangles_[i].getv(iv).getPoint());
+      cam = cameras_[i];
+      tri = triangles_[i];
+      pat = tri.getv(iv);
+      p = pat.getPoint();
+      uv = cam.project(p);
+      //uv = cameras_[i].project(triangles_[i].getv(iv).getPoint());
       if (uv.any()){
         tempuv.uv = uv;
         tempuv.imnum = imnum;
@@ -378,20 +388,50 @@ int World::getBestImage(const Triangle<Patch>& t)const{
   std::vector<int> newallim;
   int bestim;
   allim = t.getv(0).getInds();
-  for (int i=1;i<3;i++){
+  for (int i=0;i<3;i++){
     vim = t.getv(i).getInds();
-    for (size_t ii=0;ii<allim.size();ii++){
-      if (std::find(vim.begin(), vim.end(), allim[ii]) != vim.end()) {
-        newallim.push_back(allim[ii]);
+    for (size_t ii=0;ii<vim.size();ii++){
+      if (std::find(allim.begin(), allim.end(), vim[ii]) == allim.end()) {
+        allim.push_back(vim[ii]);
       }
     }
-    allim = newallim;
-    newallim = std::vector<int>();
   }
+  int count(0);
+  int max(0);
+  int wheremax(-1);
+  std::vector<int> counts = std::vector<int>(allim.size());
+  for (size_t i=0;i<allim.size();i++){
+    count = 0;
+    for (size_t ii=0;ii<3;ii++){
+      vim = t.getv(ii).getInds();
+      for (size_t iii=0;iii<vim.size();iii++){
+        if (vim[iii]==allim[i]){
+          count++;
+        }
+      }
+    }
+    if (count>max){
+      max = count;
+      wheremax = i;
+    }
+    counts[i]=count;
+  }
+  
+  /*
+  allim = newallim;
+  newallim = std::vector<int>();
+
   if (allim.empty()){
     bestim = -1;
   } else {
     bestim = allim[0];
+  }
+  */
+  bestim = allim[wheremax];
+  if (max<3){
+    std::cout<<"Max lower than 3\n";
+    std::cout<<"Count: " << max<<"\n";
+    std::cout<<"Where: " << wheremax<<"\n";
   }
   return bestim;
 }

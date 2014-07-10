@@ -13,6 +13,7 @@
 class Camera{
 public:
   Camera();
+  Camera(const Camera& c);
   virtual ~Camera();
   
   void setMat(Eigen::MatrixXf m){mat_=m;};
@@ -22,6 +23,7 @@ public:
   Eigen::Vector2f project(const std::vector<float>& v)const;
   Eigen::Vector2f project(const pcl::PointXYZ& p)const;
 
+  Camera& operator= (const Camera& p);
 private:
   Eigen::MatrixXf mat_;
   // ImageType im_;

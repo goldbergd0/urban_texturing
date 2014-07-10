@@ -15,7 +15,7 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
-#include "aux/patch.h"
+#include "aux/camera.h"
 #include "world/world.h"
 
 int main() {
@@ -38,6 +38,24 @@ int main() {
   std::cout << w.buildTriangles()<<"\n";
   std::cout <<"Map Local UV: ";
   std::cout << w.mapLocalUV()<<"\n";
+
+
+/*
+Triangle #48
+Points: 
+(0.0537752,-0.576609,-10.2631)
+(0.0544958,-0.578752,-10.2644)
+(0.051931,-0.584528,-10.2638)
+Im num: 1
+
+  pcl::PointXYZ p1(0.0537752,-0.576609,-10.2631);
+  pcl::PointXYZ p2(0.0544958,-0.578752,-10.2644);
+  pcl::PointXYZ p3(0.051931,-0.584528,-10.2638);
+  Camera c((w.getCameras())[1]);
+  c.project(p1);
+  c.project(p2);
+  c.project(p3);
+*/
 
   /*http://opencv-srf.blogspot.com/2013/06/load-display-image.html
   cv::Mat img = cv::imread("/home/dan/pmvs/visualize/00000000.jpg",CV_LOAD_IMAGE_UNCHANGED);
