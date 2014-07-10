@@ -31,3 +31,7 @@ Eigen::Vector2f Camera::project(const std::vector<float>& v)const{
   return project(in);
 }
 
+Eigen::Vector2f Camera::project(const pcl::PointXYZ& p)const{
+  Eigen::Vector3f in(p.getVector3fMap());
+  return project(in);
+}

@@ -36,7 +36,7 @@ int main() {
   std::cout << w.readPatchInfo(dir)<<"\n";
   std::cout <<"Buildling Triangles: ";
   std::cout << w.buildTriangles()<<"\n";
-  std::cout <<"Map UV: ";
+  std::cout <<"Map Local UV: ";
   std::cout << w.mapLocalUV()<<"\n";
 
   /*http://opencv-srf.blogspot.com/2013/06/load-display-image.html

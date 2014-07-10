@@ -66,8 +66,11 @@ public:
   bool buildTriangles();
   bool mapLocalUV();
 
+  int getBestImage(const Triangle<Patch>& t)const;
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
+
+  void printVectorInt(const std::vector<int>& v)const;
   std::string toString()const;
   
 /*  friend bool operator==(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2);

@@ -301,14 +301,10 @@ bool World::buildTriangles(){
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   Patch p;
   for (size_t i=0; i<verts.size(); i++){
-    p = findPatch(verts[i].vertices[0]);
-    triangles_[i].setv0(p);
-
-    p = findPatch(verts[i].vertices[1]);
-    triangles_[i].setv1(p);
-
-    p = findPatch(verts[i].vertices[2]);
-    triangles_[i].setv2(p);
+    for (int ii=0;ii<3;ii++){
+      p = findPatch(verts[i].vertices[ii]);
+      triangles_[i].setv(ii,p);
+    }
 
     if (!(i%((int)verts.size()/20))){
        std::cout<<(int)(.5+100*(float)i/verts.size())<<"%\n";
@@ -350,17 +346,54 @@ bool World::buildTriangles(){
 }
 
 bool World::mapLocalUV(){
-  Eigen::Vector2f uv;
+  Eigen::Vector2f uv(Eigen::Vector2f::Zero());
   int imnum(0);
   uvl_t tempuv;
   for (size_t i=0;i<triangles_.size();i++){
-    tempuv.uv = uv;
-    tempuv.imnum = imnum;
-    uvl_[i].setv0(tempuv);
-    uvl_[i].setv0(tempuv);
-    uvl_[i].setv0(tempuv);
+    imnum = getBestImage(triangles_[i]);
+    if (imnum<0){
+      std::cout<<"imnum: "<<imnum<<"\n";
+      std::cout<<"exiting \n";
+      return false;
+    }
+    for (int iv=0;iv<3;iv++){
+      uv = cameras_[i].project(triangles_[i].getv(iv).getPoint());
+      if (uv.any()){
+        tempuv.uv = uv;
+        tempuv.imnum = imnum;
+        uvl_[i].setv(iv,tempuv);
+      } else {
+        std::cout<<"uv: "<<uv<<"\n";
+        std::cout<<"exiting \n";
+        return false;
+      }
+    }
   }
-  return false;
+  return true;
+}
+
+int World::getBestImage(const Triangle<Patch>& t)const{
+  std::vector<int> vim;
+  std::vector<int> allim;
+  std::vector<int> newallim;
+  int bestim;
+  allim = t.getv(0).getInds();
+  for (int i=1;i<3;i++){
+    vim = t.getv(i).getInds();
+    for (size_t ii=0;ii<allim.size();ii++){
+      if (std::find(vim.begin(), vim.end(), allim[ii]) != vim.end()) {
+        newallim.push_back(allim[ii]);
+      }
+    }
+    allim = newallim;
+    newallim = std::vector<int>();
+  }
+  if (allim.empty()){
+    bestim = -1;
+  } else {
+    bestim = allim[0];
+  }
+  return bestim;
 }
 
 int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const{
@@ -395,3 +428,12 @@ Patch World::findPatch(const size_t& ind)const{
 bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
   return ( (p1.x!=p2.x) || (p1.y!=p2.y) || p1.z!=p2.z);
 }*/
+
+
+void World::printVectorInt(const std::vector<int>& v)const{
+  std::cout<<"[";
+  for (int i=0;i<(v.size()-1);i++){
+    std::cout<<v[i]<<", ";
+  }
+  std::cout<<v[v.size()-1]<<"]\n";
+}
