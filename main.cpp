@@ -37,7 +37,7 @@ int main() {
   std::cout <<"Buildling Triangles: ";
   std::cout << w.buildTriangles()<<"\n";
   std::cout <<"Map UV: ";
-  std::cout << w.mapUV()<<"\n";
+  std::cout << w.mapLocalUV()<<"\n";
 
   /*http://opencv-srf.blogspot.com/2013/06/load-display-image.html
   cv::Mat img = cv::imread("/home/dan/pmvs/visualize/00000000.jpg",CV_LOAD_IMAGE_UNCHANGED);

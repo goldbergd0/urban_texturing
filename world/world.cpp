@@ -101,6 +101,8 @@ bool World::readPly(const std::string& fname){
   std::cout<<"max: "<<max<<"\n";
   std::cout<<"N: "<<N_<<"\n";*/
   triangles_ = std::vector<Triangle<Patch> >(mesh_.polygons.size());
+  uvl_ = std::vector<Triangle<uvl_t> >(mesh_.polygons.size());
+  uvg_ = std::vector<Triangle<Eigen::Vector2f> >(mesh_.polygons.size());
   //http://docs.pointclouds.org/trunk/_vertices_8h_source.html
 
   return true;
@@ -345,6 +347,20 @@ bool World::buildTriangles(){
   
 */
   return true;
+}
+
+bool World::mapLocalUV(){
+  Eigen::Vector2f uv;
+  int imnum(0);
+  uvl_t tempuv;
+  for (size_t i=0;i<triangles_.size();i++){
+    tempuv.uv = uv;
+    tempuv.imnum = imnum;
+    uvl_[i].setv0(tempuv);
+    uvl_[i].setv0(tempuv);
+    uvl_[i].setv0(tempuv);
+  }
+  return false;
 }
 
 int World::getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const{

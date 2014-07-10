@@ -36,6 +36,11 @@
 #include "../aux/camera.h"
 #include "../aux/triangle.h"
 
+struct uvl_t {
+  Eigen::Vector2f uv;
+  int imnum;
+};
+
 class World{
 public:
   World();
@@ -59,7 +64,7 @@ public:
   bool readPatchInfo(const std::string& fname);
   bool readCameras(const std::string& fname);
   bool buildTriangles();
-  bool mapUV();
+  bool mapLocalUV();
 
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
@@ -75,7 +80,8 @@ private:
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
   std::vector<Triangle<Patch> > triangles_;
-  std::vector<Triangle<Eigen::Vector2f> > uv_;
+  std::vector<Triangle<uvl_t> > uvl_;
+  std::vector<Triangle<Eigen::Vector2f> > uvg_;
   std::vector<Camera> cameras_;
 
 };
