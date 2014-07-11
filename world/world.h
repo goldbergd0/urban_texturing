@@ -70,6 +70,7 @@ public:
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
 
+  void printPct(size_t i, size_t sz)const;
   void printVectorInt(const std::vector<int>& v)const;
   std::string toString()const;
   

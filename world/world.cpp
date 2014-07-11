@@ -218,7 +218,8 @@ bool World::readPatchInfo(const std::string& fpath){
       }
     }
     
-    if (!(i%100000))std::cout<<((int)(.5+100*(float)i/numPatch))<<"\%\n";
+    printPct(i,numPatch);
+    //if (!(i%100000))std::cout<<((int)(.5+100*(float)i/numPatch))<<"\%\n";
   }
   
   /* VERBOSE
@@ -305,10 +306,7 @@ bool World::buildTriangles(){
       p = findPatch(verts[i].vertices[ii]);
       triangles_[i].setv(ii,p);
     }
-
-    if (!(i%((int)verts.size()/20))){
-       std::cout<<(int)(.5+100*(float)i/verts.size())<<"%\n";
-    }
+    printPct(i,verts.size());
   }
   
 /* 
@@ -353,7 +351,7 @@ bool World::mapLocalUV(){
   Triangle<Patch> tri;
   Patch pat;
   pcl::PointXYZ p;
-  
+
   for (size_t i=0;i<triangles_.size();i++){
     imnum = getBestImage(triangles_[i]);
     if (imnum<0){
@@ -361,13 +359,13 @@ bool World::mapLocalUV(){
       std::cout<<"exiting \n";
       return false;
     }
+    cam = cameras_[imnum];
+    tri = triangles_[i];
     for (int iv=0;iv<3;iv++){
-      cam = cameras_[i];
-      tri = triangles_[i];
       pat = tri.getv(iv);
       p = pat.getPoint();
       uv = cam.project(p);
-      //uv = cameras_[i].project(triangles_[i].getv(iv).getPoint());
+      //uv = cameras_[imnum].project(triangles_[i].getv(iv).getPoint());
       if (uv.any()){
         tempuv.uv = uv;
         tempuv.imnum = imnum;
@@ -378,6 +376,7 @@ bool World::mapLocalUV(){
         return false;
       }
     }
+    printPct(i,triangles_.size());
   }
   return true;
 }
@@ -428,11 +427,11 @@ int World::getBestImage(const Triangle<Patch>& t)const{
   }
   */
   bestim = allim[wheremax];
-  if (max<3){
+/*  if (max<3){
     std::cout<<"Max lower than 3\n";
     std::cout<<"Count: " << max<<"\n";
     std::cout<<"Where: " << wheremax<<"\n";
-  }
+  }*/
   return bestim;
 }
 
@@ -469,6 +468,12 @@ bool operator!=(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2){
   return ( (p1.x!=p2.x) || (p1.y!=p2.y) || p1.z!=p2.z);
 }*/
 
+
+void World::printPct(size_t i, size_t sz)const {
+  if (!(i%((int)sz/20))){
+     std::cout<<(int)(.5+100*(float)i/sz)<<"%\n";
+  }
+}
 
 void World::printVectorInt(const std::vector<int>& v)const{
   std::cout<<"[";

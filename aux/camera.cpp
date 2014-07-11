@@ -22,9 +22,7 @@ Eigen::Vector2f Camera::project(const Eigen::Vector3f& v)const{
   inh(1) = v(1);
   inh(2) = v(2);
   inh(3) = 1;
-//  std::cout<<inh<<"\n";
-//  std::cout<<mat_<<"\n";
-  Eigen::Vector3f outh((mat_*inh).transpose());
+  Eigen::Vector3f outh(mat_*inh);
 //  std::cout<<outh<<"\n";
   Eigen::Vector2f out;
   out(0) = outh(0)/outh(2);
@@ -43,6 +41,6 @@ Eigen::Vector2f Camera::project(const pcl::PointXYZ& p)const{
 }
 
 Camera& Camera::operator=(const Camera& c){
-  c.getMat();
+  setMat(c.getMat());
   return *this;
 }

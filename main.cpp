@@ -40,7 +40,13 @@ int main() {
   std::cout << w.mapLocalUV()<<"\n";
 
 
-/*
+/*  
+  std::vector<Camera> cams = w.getCameras();
+  for (size_t i = 0; i<cams.size();++i){
+    std::cout<<"Camera "<<i<<":"<<std::endl;
+    std::cout<<cams[i].getMat()<<std::endl;
+  }
+
 Triangle #48
 Points: 
 (0.0537752,-0.576609,-10.2631)
