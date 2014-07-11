@@ -69,7 +69,6 @@ bool World::readPly(const std::string& fname){
   //pcl::PLYReader reader;
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   //return (reader.read(fname,*cloud)<0);
-  
   int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
   if (status==-1){
     return false;
@@ -380,7 +379,6 @@ bool World::mapLocalUV(){
   }
   return true;
 }
-
 int World::getBestImage(const Triangle<Patch>& t)const{
   std::vector<int> vim;
   std::vector<int> allim;
@@ -407,7 +405,8 @@ int World::getBestImage(const Triangle<Patch>& t)const{
         if (vim[iii]==allim[i]){
           count++;
         }
-      }
+      
+}
     }
     if (count>max){
       max = count;
@@ -427,11 +426,6 @@ int World::getBestImage(const Triangle<Patch>& t)const{
   }
   */
   bestim = allim[wheremax];
-/*  if (max<3){
-    std::cout<<"Max lower than 3\n";
-    std::cout<<"Count: " << max<<"\n";
-    std::cout<<"Where: " << wheremax<<"\n";
-  }*/
   return bestim;
 }
 

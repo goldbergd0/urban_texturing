@@ -39,7 +39,6 @@ int main() {
   std::cout <<"Map Local UV: ";
   std::cout << w.mapLocalUV()<<"\n";
 
-
 /*  
   std::vector<Camera> cams = w.getCameras();
   for (size_t i = 0; i<cams.size();++i){
