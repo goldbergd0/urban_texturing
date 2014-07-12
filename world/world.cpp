@@ -24,7 +24,8 @@ World::World()
     mesh_(),
     patches_(),
     triangles_(),
-    cameras_(){}
+    cameras_(),
+    texMesh_(){}
 /*
 Cloud::Cloud(unsigned int N)
   : N_(N),
@@ -39,7 +40,9 @@ World::World(const int& nCams)
     mesh_(),
     patches_(),
     triangles_(),
-    cameras_(std::vector<Camera>(nCams)){}
+    cameras_(std::vector<Camera>(nCams)),
+    texMesh_(){}
+
 
 World::World(const World& c)
   : N_(c.getN()),
@@ -48,11 +51,10 @@ World::World(const World& c)
     mesh_(c.getMesh()),
     patches_(c.getPatches()),
     triangles_(c.getTriangles()),
-    cameras_(c.getCameras())
-    {}
+    cameras_(c.getCameras()),
+    texMesh_(c.getTexMesh()){}
 
-World::~World(){
-  }
+World::~World(){}
 
 // fname is name and path
 bool World::readPly(const std::string& fname){
@@ -288,6 +290,7 @@ bool World::readCameras(const std::string& fpath){
         line.clear();
       }
       cameras_[i].setMat(mat);
+      cameras_[i].setFileName(fname);
     } else { // if file is open
       return false;
     }
@@ -379,6 +382,41 @@ bool World::mapLocalUV(){
   }
   return true;
 }
+
+bool makeTextureMesh(){
+  // http://www.pcl-users.org/I-want-to-solve-surface-problem-please-td4028099.html
+  // http://pointclouds.org/blog/gsoc/ktran/blog_6_7_obj_io.php
+  pcl::TextureMapping<PointXYZ> tm;
+  tm.setF(.01);
+  tm.setVectorField(1,0,0);
+  
+  pcl::TexMaterial texMat;
+  texMat.tex_Ka.r = 0.2f;
+  texMat.tex_Ka.g = 0.2f;
+  texMat.tex_Ka.b = 0.2f;
+  texMat.tex_Kd.r = 0.8f;
+  texMat.tex_Kd.g = 0.8f;
+  texMat.tex_Kd.b = 0.8f;
+  texMat.tex_Ks.r = 1.0f;
+  texMat.tex_Ks.g = 1.0f;
+  texMat.tex_Ks.b = 1.0f;
+  texMat.tex_d = 1.0f;
+  texMat.tex_Ns = 0.0f;
+  texMat.tex_illum = 2;
+  tm.setTextureMaterials(tex_material);
+  
+  tm.setTextureFiles(filelist);
+  
+  texMesh_.header = mesh_.header;
+  texMesh_.cloud = mesh_.cloud;
+  tex_mesh.tex_polygons = mesh_.polygons;
+  
+
+  
+  return false;
+}
+
+
 int World::getBestImage(const Triangle<Patch>& t)const{
   std::vector<int> vim;
   std::vector<int> allim;
@@ -406,7 +444,7 @@ int World::getBestImage(const Triangle<Patch>& t)const{
           count++;
         }
       
-}
+      }
     }
     if (count>max){
       max = count;

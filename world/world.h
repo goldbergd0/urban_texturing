@@ -29,6 +29,8 @@
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/Vertices.h>
+#include <pcl/surface/texture_mapping.h>
+#include <pcl/TextureMesh.h>
 
 #include <boost/ptr_container/ptr_vector.hpp>
 
@@ -57,6 +59,7 @@ public:
   std::vector<Camera> getCameras()const{return cameras_;};
   std::vector<Triangle<Patch> > getTriangles()const{return triangles_;};
   size_t getN()const{return N_;};
+  pcl::TextureMesh getTexMesh()const{return texMesh_;};
 
   void setNCameras(const int& n){cameras_=std::vector<Camera>(n);};
 
@@ -65,6 +68,8 @@ public:
   bool readCameras(const std::string& fname);
   bool buildTriangles();
   bool mapLocalUV();
+  bool makeTextureMesh();
+  bool writeOBJ();
 
   int getBestImage(const Triangle<Patch>& t)const;
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
@@ -87,6 +92,7 @@ private:
   std::vector<Triangle<uvl_t> > uvl_;
   std::vector<Triangle<Eigen::Vector2f> > uvg_;
   std::vector<Camera> cameras_;
+  pcl::TextureMesh texMesh_;
 
 };
 
