@@ -25,6 +25,8 @@ class Triangle{
     T getv1()const{return v1_;};
     T getv2()const{return v2_;};
     T getv(const int& i)const;
+
+    std::vector<T> unwrap()const;
   
   private:
     T v0_;
@@ -80,4 +82,14 @@ T Triangle<T>::getv(const int& i)const{
   }
   return T();
 }
+
+template<typename T>
+std::vector<T> Triangle<T>::unwrap()const{
+  std::vector<T> outvec(3);
+  outvec.push_back(v0_);
+  outvec.push_back(v1_);
+  outvec.push_back(v2_);
+  return outvec;
+}
+
 #endif

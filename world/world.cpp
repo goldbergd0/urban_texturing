@@ -383,7 +383,26 @@ bool World::mapLocalUV(){
   return true;
 }
 
-bool makeTextureMesh(){
+bool World::mapGlobalUV(const int& imWidth){
+  uvg_ = std::vector<Triangle<Eigen::Vector2f> >(uvl_.size());
+  Eigen::Vector2f uv;
+  uvl_t localUV;
+  int xoffset;
+  for (size_t triInd=0;triInd<uvl_.size();++triInd){
+    localUV = uvl_[triInd];
+    xoffset = localUV.imnum * imWidth;
+    uvg_[i] = Eigen::Vector2f(localUV.uv(0)+xoffset,localUV.uv(1));
+  }
+  
+  return true;
+}
+
+bool World::makeTextureAtlas(){
+  mapGlobalUV(imWidth);
+  return false;
+}
+
+bool World::makeTextureMesh(){
   // http://www.pcl-users.org/I-want-to-solve-surface-problem-please-td4028099.html
   // http://pointclouds.org/blog/gsoc/ktran/blog_6_7_obj_io.php
   pcl::TextureMapping<PointXYZ> tm;
@@ -415,7 +434,6 @@ bool makeTextureMesh(){
   
   return false;
 }
-
 
 int World::getBestImage(const Triangle<Patch>& t)const{
   std::vector<int> vim;

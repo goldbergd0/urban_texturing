@@ -68,6 +68,8 @@ public:
   bool readCameras(const std::string& fname);
   bool buildTriangles();
   bool mapLocalUV();
+  bool mapGlobalUV(const int& imWidth);
+  bool makeTexureAtlas();
   bool makeTextureMesh();
   bool writeOBJ();
 
