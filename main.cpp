@@ -14,6 +14,8 @@
 #include <pcl/point_types.h>
 
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/opencv.hpp"
 
 #include "aux/camera.h"
 #include "world/world.h"
@@ -38,6 +40,8 @@ int main() {
   std::cout << w.buildTriangles()<<"\n";
   std::cout <<"Map Local UV: ";
   std::cout << w.mapLocalUV()<<"\n";
+  std::cout <<"Make Texture Atlas: ";
+  std::cout << w.makeTextureAtlas()<<"\n";
 
 /*  
   std::vector<Camera> cams = w.getCameras();

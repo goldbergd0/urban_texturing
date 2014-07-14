@@ -32,7 +32,9 @@
 #include <pcl/surface/texture_mapping.h>
 #include <pcl/TextureMesh.h>
 
-#include <boost/ptr_container/ptr_vector.hpp>
+//#include <boost/ptr_container/ptr_vector.hpp>
+
+#include "opencv2/opencv.hpp"
 
 #include "../aux/patch.h"
 #include "../aux/camera.h"
@@ -69,10 +71,11 @@ public:
   bool buildTriangles();
   bool mapLocalUV();
   bool mapGlobalUV(const int& imWidth);
-  bool makeTexureAtlas();
+  bool makeTextureAtlas();
   bool makeTextureMesh();
   bool writeOBJ();
 
+  cv::Mat createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const;
   int getBestImage(const Triangle<Patch>& t)const;
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;

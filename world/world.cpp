@@ -385,27 +385,42 @@ bool World::mapLocalUV(){
 
 bool World::mapGlobalUV(const int& imWidth){
   uvg_ = std::vector<Triangle<Eigen::Vector2f> >(uvl_.size());
-  Eigen::Vector2f uv;
-  uvl_t localUV;
+  Triangle<uvl_t> localUVtri;
+  Triangle<Eigen::Vector2f> uvTri;
   int xoffset;
   for (size_t triInd=0;triInd<uvl_.size();++triInd){
-    localUV = uvl_[triInd];
-    xoffset = localUV.imnum * imWidth;
-    uvg_[i] = Eigen::Vector2f(localUV.uv(0)+xoffset,localUV.uv(1));
+    localUVtri = uvl_[triInd];
+    for (size_t vInd=0;vInd<3;++vInd){
+      xoffset = localUVtri.getv(vInd).imnum * imWidth;
+      uvTri.setv( vInd,
+                  Eigen::Vector2f(localUVtri.getv(vInd).uv(0)+xoffset,
+                                  localUVtri.getv(vInd).uv(1)));
+    }
+    uvg_[triInd] = uvTri;
   }
   
   return true;
 }
 
 bool World::makeTextureAtlas(){
+  int numImages(cameras_.size());
+  int imWidth;
+  std::vector<cv::Mat> images(numImages);
+  for (int i=0;i<numImages;++i){
+    images.push_back( cv::imread(cameras_[i].getFileName()) );
+  }
+  cv::Mat atlas = createOneImage(images, imWidth);
   mapGlobalUV(imWidth);
-  return false;
+  std::vector<int> imwriteParams(CV_IMWRITE_PNG_COMPRESSION,0);
+  return cv::imwrite( "./texture_atlas.png",
+                      atlas,
+                      imwriteParams );
 }
 
 bool World::makeTextureMesh(){
   // http://www.pcl-users.org/I-want-to-solve-surface-problem-please-td4028099.html
   // http://pointclouds.org/blog/gsoc/ktran/blog_6_7_obj_io.php
-  pcl::TextureMapping<PointXYZ> tm;
+  pcl::TextureMapping<pcl::PointXYZ> tm;
   tm.setF(.01);
   tm.setVectorField(1,0,0);
   
@@ -422,17 +437,49 @@ bool World::makeTextureMesh(){
   texMat.tex_d = 1.0f;
   texMat.tex_Ns = 0.0f;
   texMat.tex_illum = 2;
-  tm.setTextureMaterials(tex_material);
+  tm.setTextureMaterials(texMat);
   
-  tm.setTextureFiles(filelist);
+  std::vector<std::string> texFiles;
+  texFiles.push_back("./textureAtlas.png");
+  tm.setTextureFiles(texFiles);
   
   texMesh_.header = mesh_.header;
   texMesh_.cloud = mesh_.cloud;
-  tex_mesh.tex_polygons = mesh_.polygons;
+  texMesh_.tex_polygons.push_back( mesh_.polygons );
   
 
   
   return false;
+}
+
+cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const{
+// Inspired by http://answers.opencv.org/question/13876/read-multiple-images-from-folder-and-concat/
+  
+  int numImages(images.size());
+  int width(images[0].cols);
+  int height(images[0].rows);
+  
+  cv::Mat result(cv::Mat::zeros(height, numImages*width, images[0].type()));
+  
+  cv::Mat roiInResult;
+  int curWidth(0);
+  for (int i=0;i<numImages;++i){
+    if (images[0].cols != width){
+      std::cerr<<"Warning: createOneImage fail, images are different widths\n";
+      return result;
+    }
+    if (images[0].rows != height){
+      std::cerr<<"Warning: createOneImage fail, images are different heights\n";
+      return result;
+    }
+    roiInResult = cv::Mat(result,
+                          cv::Range(0,height),
+                          cv::Range(curWidth,curWidth + width));
+    images[i].copyTo(roiInResult);
+    curWidth += width;
+  }
+  imWidth = width;
+  return result;
 }
 
 int World::getBestImage(const Triangle<Patch>& t)const{
