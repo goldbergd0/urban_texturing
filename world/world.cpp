@@ -244,6 +244,7 @@ bool World::readPatchInfo(const std::string& fpath){
 // fpath is path to pmvs
 bool World::readCameras(const std::string& fpath){
   std::string name("txt/");
+  std::string visname("visualize/");
   /*if (fpath.compare(fpath.size()-1,1,"/")){
     name = name.substr(1,name.size()-1);
   }
@@ -252,6 +253,7 @@ bool World::readCameras(const std::string& fpath){
   int ncams(cameras_.size());
   Eigen::MatrixXf mat;
   std::string fname;
+  std::string imageFname;
   std::string strnum;
   std::string str0s = "000000";
   std::string str0 = "0";
@@ -273,6 +275,7 @@ bool World::readCameras(const std::string& fpath){
       strnum = str0 + strnum;
     }
     fname = fpath + name + str0s + strnum + ".txt";
+    imageFname = fpath + visname + str0s + strnum + ".jpg";
     // Reading file
     file.open(fname.c_str());
     if (file.is_open()){
@@ -290,7 +293,7 @@ bool World::readCameras(const std::string& fpath){
         line.clear();
       }
       cameras_[i].setMat(mat);
-      cameras_[i].setFileName(fname);
+      cameras_[i].setFileName(imageFname);
     } else { // if file is open
       return false;
     }
@@ -406,8 +409,10 @@ bool World::makeTextureAtlas(){
   int numImages(cameras_.size());
   int imWidth;
   std::vector<cv::Mat> images(numImages);
+  std::string fname;
   for (int i=0;i<numImages;++i){
-    images.push_back( cv::imread(cameras_[i].getFileName()) );
+    fname = cameras_[i].getFileName();
+    images[i]=cv::imread(fname, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
   }
   cv::Mat atlas = createOneImage(images, imWidth);
   mapGlobalUV(imWidth);
@@ -415,6 +420,7 @@ bool World::makeTextureAtlas(){
   return cv::imwrite( "./texture_atlas.png",
                       atlas,
                       imwriteParams );
+//  return true;
 }
 
 bool World::makeTextureMesh(){
@@ -464,11 +470,17 @@ cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth)co
   cv::Mat roiInResult;
   int curWidth(0);
   for (int i=0;i<numImages;++i){
-    if (images[0].cols != width){
+    /* VERBOSE
+    std::cout<<"\nImage: "<<i<<std::endl;
+    std::cout<<"Height: "<<images[i].rows<<std::endl;
+    std::cout<<"Width: "<<images[i].cols<<std::endl;
+    std::cout<<"Type: "<<CV_MAT_TYPE(images[i].type())<<std::endl;
+    */
+    if (images[i].cols != width){
       std::cerr<<"Warning: createOneImage fail, images are different widths\n";
       return result;
     }
-    if (images[0].rows != height){
+    if (images[i].rows != height){
       std::cerr<<"Warning: createOneImage fail, images are different heights\n";
       return result;
     }
