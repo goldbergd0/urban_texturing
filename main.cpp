@@ -31,17 +31,20 @@ int main() {
   World w(totNimgs);
   
   std::cout <<"Reading PLY: ";
-  std::cout <<w.readPly(dir+plyname)<<"\n";
+  std::cout <<w.readPly(dir+plyname)<<std::endl;
   std::cout <<"Reading Cameras: ";
-  std::cout << w.readCameras(dir)<<"\n";
+  std::cout << w.readCameras(dir)<<std::endl;
   std::cout <<"Reading Patch file: ";
-  std::cout << w.readPatchInfo(dir)<<"\n";
+  std::cout << w.readPatchInfo(dir)<<std::endl;
   std::cout <<"Buildling Triangles: ";
-  std::cout << w.buildTriangles()<<"\n";
+  std::cout << w.buildTriangles()<<std::endl;
   std::cout <<"Map Local UV: ";
-  std::cout << w.mapLocalUV()<<"\n";
+  std::cout << w.mapLocalUV()<<std::endl;
   std::cout <<"Make Texture Atlas: ";
-  std::cout << w.makeTextureAtlas()<<"\n";
+  int width = w.makeTextureAtlas();
+  std::cout << (width>-1) <<std::endl;
+  std::cout <<"Map Global UV: ";
+  std::cout << w.mapGlobalUV(width)<<std::endl;
 
 /*  
   std::vector<Camera> cams = w.getCameras();

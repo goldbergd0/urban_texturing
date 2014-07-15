@@ -70,11 +70,11 @@ public:
   bool readCameras(const std::string& fname);
   bool buildTriangles();
   bool mapLocalUV();
-  bool mapGlobalUV(const int& imWidth);
-  bool makeTextureAtlas();
+  int makeTextureAtlas();
   bool makeTextureMesh();
   bool writeOBJ();
 
+  bool mapGlobalUV(const int& imWidth);
   cv::Mat createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const;
   int getBestImage(const Triangle<Patch>& t)const;
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;

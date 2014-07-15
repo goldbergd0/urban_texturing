@@ -386,40 +386,30 @@ bool World::mapLocalUV(){
   return true;
 }
 
-bool World::mapGlobalUV(const int& imWidth){
-  uvg_ = std::vector<Triangle<Eigen::Vector2f> >(uvl_.size());
-  Triangle<uvl_t> localUVtri;
-  Triangle<Eigen::Vector2f> uvTri;
-  int xoffset;
-  for (size_t triInd=0;triInd<uvl_.size();++triInd){
-    localUVtri = uvl_[triInd];
-    for (size_t vInd=0;vInd<3;++vInd){
-      xoffset = localUVtri.getv(vInd).imnum * imWidth;
-      uvTri.setv( vInd,
-                  Eigen::Vector2f(localUVtri.getv(vInd).uv(0)+xoffset,
-                                  localUVtri.getv(vInd).uv(1)));
-    }
-    uvg_[triInd] = uvTri;
-  }
-  
-  return true;
-}
-
-bool World::makeTextureAtlas(){
+int World::makeTextureAtlas(){
   int numImages(cameras_.size());
   int imWidth;
   std::vector<cv::Mat> images(numImages);
   std::string fname;
-  for (int i=0;i<numImages;++i){
-    fname = cameras_[i].getFileName();
-    images[i]=cv::imread(fname, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
+  std::string textureAtlasFName("./texture_atlas.png");
+  if (access(textureAtlasFName.c_str(), F_OK) == -1) {
+    for (int i=0;i<numImages;++i){
+      fname = cameras_[i].getFileName();
+      images[i]=cv::imread(fname, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
+    }
+    cv::Mat atlas = createOneImage(images, imWidth);
+    mapGlobalUV(imWidth);
+    std::vector<int> imwriteParams(CV_IMWRITE_PNG_COMPRESSION,0);
+    bool status = cv::imwrite(textureAtlasFName,
+                              atlas,
+                              imwriteParams );
+    if (!status){
+      return -1;
+    }
+  } else {
+    imWidth = cv::imread(fname).cols;
   }
-  cv::Mat atlas = createOneImage(images, imWidth);
-  mapGlobalUV(imWidth);
-  std::vector<int> imwriteParams(CV_IMWRITE_PNG_COMPRESSION,0);
-  return cv::imwrite( "./texture_atlas.png",
-                      atlas,
-                      imwriteParams );
+  return imWidth;
 //  return true;
 }
 
@@ -456,6 +446,25 @@ bool World::makeTextureMesh(){
 
   
   return false;
+}
+
+bool World::mapGlobalUV(const int& imWidth){
+  uvg_ = std::vector<Triangle<Eigen::Vector2f> >(uvl_.size());
+  Triangle<uvl_t> localUVtri;
+  Triangle<Eigen::Vector2f> uvTri;
+  int xoffset;
+  for (size_t triInd=0;triInd<uvl_.size();++triInd){
+    localUVtri = uvl_[triInd];
+    for (size_t vInd=0;vInd<3;++vInd){
+      xoffset = localUVtri.getv(vInd).imnum * imWidth;
+      uvTri.setv( vInd,
+                  Eigen::Vector2f(localUVtri.getv(vInd).uv(0)+xoffset,
+                                  localUVtri.getv(vInd).uv(1)));
+    }
+    uvg_[triInd] = uvTri;
+  }
+  
+  return true;
 }
 
 cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const{
