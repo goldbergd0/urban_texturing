@@ -19,7 +19,6 @@
 */
 World::World()
   : N_(),
-    points_(),
     kdtree_(),
     mesh_(),
     patches_(),
@@ -35,7 +34,6 @@ Cloud::Cloud(unsigned int N)
 */
 World::World(const int& nCams)
   : N_(),
-    points_(),
     kdtree_(),
     mesh_(),
     patches_(),
@@ -46,7 +44,6 @@ World::World(const int& nCams)
 
 World::World(const World& c)
   : N_(c.getN()),
-    points_(c.getPoints()),
     kdtree_(c.getTree()),
     mesh_(c.getMesh()),
     patches_(c.getPatches()),
@@ -77,10 +74,11 @@ bool World::readPly(const std::string& fname){
   }
   pcl::PointCloud<pcl::PointXYZ> cloud;
   pcl::fromPCLPointCloud2(mesh_.cloud,cloud);
-  points_.reset(new pcl::PointCloud<pcl::PointXYZ>(cloud));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr points;
+  points.reset(new pcl::PointCloud<pcl::PointXYZ>(cloud));
   N_ = cloud.points.size();
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (points_);
-  kdtree_.setInputCloud(points_);
+  kdtree_.setInputCloud(points);
   /*
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   uint32_t num;
@@ -307,10 +305,10 @@ bool World::buildTriangles(){
   size_t patchIndex;
   for (size_t i=0; i<verts.size(); i++){
     for (int ii=0;ii<3;ii++){
+      patchIndex = verts[i].vertices[ii];
       p = patches_[patchIndex];
       triangles_[i].setv(ii,p);
     }
-    printPct(i,verts.size());
   }
   
 /* 
@@ -439,6 +437,11 @@ bool World::makeTextureMesh(){
   size_t numTriangles(triangles_.size());
   texMesh_.header = mesh_.header;
   texMesh_.cloud = mesh_.cloud;
+  std::vector<pcl::Normal> normals(N_);
+  for (size_t i=0;i<N_;++i){
+    normals[i] = patches_[i].getNormal();
+  }
+  texMesh_.tex_normals = normals;
 
   std::vector<Eigen::Vector2f> texCoord(numTriangles*3);
   std::vector<pcl::Vertices> polygons(numTriangles);
@@ -447,16 +450,17 @@ bool World::makeTextureMesh(){
   Patch p;
   for (size_t triInd=0;triInd<numTriangles;++triInd){
     for (int vertInd=0;vertInd<3;++vertInd){
-      t = triangles_[triInd];
-      p = t.getv(vertInd);
-      std::cout<<p<<std::endl;
-      std::cout<<p.getPointInd()<<std::endl;
-      vert.vertices[vertInd] = p.getPointInd();
+//      t = triangles_[triInd];
+//      p = t.getv(vertInd);
+//      std::cout<<p<<std::endl;
+//      std::cout<<p.getPointInd()<<std::endl;
+//      vert.vertices[vertInd] = p.getPointInd();
       texCoord[triInd*3+vertInd] = uvg_[triInd].getv(vertInd);
     }
-    polygons[triInd] = vert;
+//    polygons[triInd] = vert;
   }
-  texMesh_.tex_polygons.push_back( polygons );
+//  texMesh_.tex_polygons.push_back( polygons );
+  texMesh_.tex_polygons.push_back( mesh_.polygons );
 
   texMat.tex_name = "material_0";
   texMat.tex_file = texFile;

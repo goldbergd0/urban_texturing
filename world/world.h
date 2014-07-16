@@ -54,7 +54,7 @@ public:
   World(const World& c);
   virtual ~World();
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
+  //pcl::PointCloud<pcl::PointXYZ>::Ptr getPoints()const{return points_;};
   pcl::KdTreeFLANN<pcl::PointXYZ> getTree()const{return kdtree_;};
   pcl::PolygonMesh getMesh()const{return mesh_;};
   std::vector<Patch> getPatches()const{return patches_;};
@@ -90,7 +90,6 @@ public:
  */ 
 private:
   size_t N_;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr points_;
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree_;
   pcl::PolygonMesh mesh_;
   std::vector<Patch> patches_;
