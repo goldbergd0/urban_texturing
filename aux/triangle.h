@@ -27,7 +27,9 @@ class Triangle{
     T getv(const int& i)const;
 
     std::vector<T> unwrap()const;
-  
+    
+    Triangle<T>& operator=(const Triangle<T>& t);
+    
   private:
     T v0_;
     T v1_;
@@ -92,4 +94,11 @@ std::vector<T> Triangle<T>::unwrap()const{
   return outvec;
 }
 
+template<typename T>
+Triangle<T>& Triangle<T>::operator=(const Triangle<T>& t){
+  for (int i=0;i<3;++i){
+    setv(i,t.getv(i));
+  }
+  return *this;
+}
 #endif

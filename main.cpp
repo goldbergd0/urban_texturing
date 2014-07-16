@@ -45,6 +45,10 @@ int main() {
   std::cout << (width>-1) <<std::endl;
   std::cout <<"Map Global UV: ";
   std::cout << w.mapGlobalUV(width)<<std::endl;
+  std::cout <<"Make Texture Mesh: ";
+  std::cout << w.makeTextureMesh()<<std::endl;
+  std::cout <<"Write obj File: ";
+  std::cout << w.writeOBJ()<<std::endl;
 
 /*  
   std::vector<Camera> cams = w.getCameras();

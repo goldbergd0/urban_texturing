@@ -214,8 +214,6 @@ bool World::readPatchInfo(const std::string& fpath){
         patches_[pointIndex].setNImages(numImg);
         patches_[pointIndex].setInds(inds);
         patches_[pointIndex].setPointInd(pointIndex);
-
-        // VERBOSE std::cout<<patchi<<": "<<p<<"\n";
       }
     }
     
@@ -306,9 +304,10 @@ bool World::buildTriangles(){
  
   std::vector<pcl::Vertices>verts(mesh_.polygons);
   Patch p;
+  size_t patchIndex;
   for (size_t i=0; i<verts.size(); i++){
     for (int ii=0;ii<3;ii++){
-      p = findPatch(verts[i].vertices[ii]);
+      p = patches_[patchIndex];
       triangles_[i].setv(ii,p);
     }
     printPct(i,verts.size());
@@ -435,17 +434,42 @@ bool World::makeTextureMesh(){
   texMat.tex_illum = 2;
   tm.setTextureMaterials(texMat);
   
-  std::vector<std::string> texFiles;
-  texFiles.push_back("./textureAtlas.png");
-  tm.setTextureFiles(texFiles);
-  
+  std::string texFile("./texture_atlas.png");
+//  tm.setTextureFiles(texFiles);
+  size_t numTriangles(triangles_.size());
   texMesh_.header = mesh_.header;
   texMesh_.cloud = mesh_.cloud;
-  texMesh_.tex_polygons.push_back( mesh_.polygons );
-  
 
+  std::vector<Eigen::Vector2f> texCoord(numTriangles*3);
+  std::vector<pcl::Vertices> polygons(numTriangles);
+  pcl::Vertices vert;
+  Triangle<Patch> t;
+  Patch p;
+  for (size_t triInd=0;triInd<numTriangles;++triInd){
+    for (int vertInd=0;vertInd<3;++vertInd){
+      t = triangles_[triInd];
+      p = t.getv(vertInd);
+      std::cout<<p<<std::endl;
+      std::cout<<p.getPointInd()<<std::endl;
+      vert.vertices[vertInd] = p.getPointInd();
+      texCoord[triInd*3+vertInd] = uvg_[triInd].getv(vertInd);
+    }
+    polygons[triInd] = vert;
+  }
+  texMesh_.tex_polygons.push_back( polygons );
+
+  texMat.tex_name = "material_0";
+  texMat.tex_file = texFile;
+  texMesh_.tex_materials.push_back(texMat);
   
-  return false;
+  texMesh_.tex_coordinates.push_back(texCoord);
+  
+  return true;
+}
+
+int World::writeOBJ(){
+  int status = pcl::io::saveOBJFile("./out.obj", texMesh_);
+  return status;
 }
 
 bool World::mapGlobalUV(const int& imWidth){

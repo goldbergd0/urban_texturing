@@ -23,6 +23,7 @@
 //#include <pcl/io/vtk_lib_io.h> 
 //#include <pcl/io/ply.h> 
 #include <pcl/io/ply_io.h> 
+#include <pcl/io/obj_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -72,7 +73,7 @@ public:
   bool mapLocalUV();
   int makeTextureAtlas();
   bool makeTextureMesh();
-  bool writeOBJ();
+  int writeOBJ();
 
   bool mapGlobalUV(const int& imWidth);
   cv::Mat createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const;
