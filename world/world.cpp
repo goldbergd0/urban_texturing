@@ -441,7 +441,7 @@ bool World::makeTextureMesh(){
   for (size_t i=0;i<N_;++i){
     normals[i] = patches_[i].getNormal();
   }
-  texMesh_.tex_normals = normals;
+  //texMesh_.tex_normals = normals;
 
   std::vector<Eigen::Vector2f> texCoord(numTriangles*3);
   std::vector<pcl::Vertices> polygons(numTriangles);
