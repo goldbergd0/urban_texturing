@@ -10,9 +10,8 @@
 #include <pcl/io/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-int
-pcl::io::saveOBJFile (const std::string &file_name,
-            const pcl::TextureMesh &tex_Mesh, unsigned precision)
+int myobjio::saveOBJFile (const std::string &file_name,
+            const my::TextureMesh &tex_Mesh, unsigned precision)
 {
   if (tex_Mesh.cloud.data.empty ())
   {

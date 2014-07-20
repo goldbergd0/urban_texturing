@@ -13,12 +13,10 @@
 
 // Include the correct Header path here
 #include <pcl/PolygonMesh.h>
-#include "std_msgs/Header.h"
-#include "sensor_msgs/PointCloud2.h"
 #include "pcl/Vertices.h"
 #include "pcl/point_types.h"
 
-namespace pcl
+namespace my
 {
   struct RGB{
     float r;
@@ -44,9 +42,9 @@ namespace pcl
         TextureMesh () : header (), cloud (), tex_polygons ()
         {}
 
-        ::std_msgs::Header                      header;
+        pcl::PCLHeader                  header;
 
-        ::sensor_msgs::PointCloud2              cloud;
+        pcl::PointCloud2                cloud;
 
         std::vector< ::pcl::Vertices>   tex_polygons; // polygon which is mapped with specific texture defined in TexMaterial
         std::vector< ::pcl::Normal>     tex_normals; // normal vertices

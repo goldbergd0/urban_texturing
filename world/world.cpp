@@ -413,9 +413,9 @@ int World::makeTextureAtlas(){
 bool World::makeTextureMesh(){
   // http://www.pcl-users.org/I-want-to-solve-surface-problem-please-td4028099.html
   // http://pointclouds.org/blog/gsoc/ktran/blog_6_7_obj_io.php
-  pcl::TextureMapping<pcl::PointXYZ> tm;
-  tm.setF(.01);
-  tm.setVectorField(1,0,0);
+  //pcl::TextureMapping<pcl::PointXYZ> tm;
+  //tm.setF(.01);
+  //tm.setVectorField(1,0,0);
   
   pcl::TexMaterial texMat;
   texMat.tex_Ka.r = 0.2f;
@@ -459,14 +459,16 @@ bool World::makeTextureMesh(){
     }
 //    polygons[triInd] = vert;
   }
-//  texMesh_.tex_polygons.push_back( polygons );
-  texMesh_.tex_polygons.push_back( mesh_.polygons );
+//  texMesh_.tex_polygons.push_back( mesh_.polygons );
+  texMesh_.tex_polygons = mesh_.polygons;
 
   texMat.tex_name = "material_0";
   texMat.tex_file = texFile;
-  texMesh_.tex_materials.push_back(texMat);
+  //texMesh_.tex_materials.push_back(texMat);
+  texMesh_.tex_materials = texMat;
   
-  texMesh_.tex_coordinates.push_back(texCoord);
+  //texMesh_.tex_coordinates.push_back(texCoord);
+  texMesh_.tex_coordinates = texCoord;
   
   return true;
 }

@@ -3,7 +3,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/surface/texture.h>
-namespace pcl
+namespace my
 {
   namespace io
   {
@@ -15,7 +15,7 @@ namespace pcl
       */
     PCL_EXPORTS int
     saveOBJFile (const std::string &file_name,
-            const pcl::TextureMesh &tex_Mesh, unsigned precision = 5);
+            const my::TextureMesh &tex_Mesh, unsigned precision = 5);
   }
 }
 

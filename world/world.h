@@ -40,6 +40,9 @@
 #include "../aux/patch.h"
 #include "../aux/camera.h"
 #include "../aux/triangle.h"
+#include "../world/myobjio.h"
+#include "../world/myobjio.cpp"
+#include "../world/mytexture.h"
 
 struct uvl_t {
   Eigen::Vector2f uv;
