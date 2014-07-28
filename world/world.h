@@ -40,10 +40,6 @@
 #include "../aux/patch.h"
 #include "../aux/camera.h"
 #include "../aux/triangle.h"
-#include "../world/myobjio.h"
-#include "../world/myobjio.cpp"
-#include "../world/mytexture.h"
-
 struct uvl_t {
   Eigen::Vector2f uv;
   int imnum;
@@ -65,7 +61,7 @@ public:
   std::vector<Camera> getCameras()const{return cameras_;};
   std::vector<Triangle<Patch> > getTriangles()const{return triangles_;};
   size_t getN()const{return N_;};
-  pcl::TextureMesh getTexMesh()const{return texMesh_;};
+  //pcl::TextureMesh getTexMesh()const{return texMesh_;};
 
   void setNCameras(const int& n){cameras_=std::vector<Camera>(n);};
 
@@ -74,12 +70,13 @@ public:
   bool readCameras(const std::string& fname);
   bool buildTriangles();
   bool mapLocalUV();
-  int makeTextureAtlas();
-  bool makeTextureMesh();
-  int writeOBJ();
+  bool makeTextureAtlas(int& imWidth, int& imHeight);
+//  bool makeTextureMesh();
+  bool writeOBJ(const std::string& fname)const;
+  bool writeOBJ()const;
 
-  bool mapGlobalUV(const int& imWidth);
-  cv::Mat createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const;
+  bool mapGlobalUV(const int& imWidth,const int& imHeight);
+  cv::Mat createOneImage(const std::vector<cv::Mat>& images,int& imWidth, int& imHeight)const;
   int getBestImage(const Triangle<Patch>& t)const;
   int getGoodIndex(const std::vector<int>& inds, std::vector<size_t>& allIndices)const;
   Patch findPatch(const size_t& ind)const;
@@ -100,7 +97,7 @@ private:
   std::vector<Triangle<uvl_t> > uvl_;
   std::vector<Triangle<Eigen::Vector2f> > uvg_;
   std::vector<Camera> cameras_;
-  pcl::TextureMesh texMesh_;
+//  pcl::TextureMesh texMesh_;
 
 };
 

@@ -23,8 +23,8 @@ World::World()
     mesh_(),
     patches_(),
     triangles_(),
-    cameras_(),
-    texMesh_(){}
+    cameras_(){}
+    //texMesh_(){}
 /*
 Cloud::Cloud(unsigned int N)
   : N_(N),
@@ -38,8 +38,8 @@ World::World(const int& nCams)
     mesh_(),
     patches_(),
     triangles_(),
-    cameras_(std::vector<Camera>(nCams)),
-    texMesh_(){}
+    cameras_(std::vector<Camera>(nCams)) {}
+    //texMesh_(){}
 
 
 World::World(const World& c)
@@ -48,8 +48,8 @@ World::World(const World& c)
     mesh_(c.getMesh()),
     patches_(c.getPatches()),
     triangles_(c.getTriangles()),
-    cameras_(c.getCameras()),
-    texMesh_(c.getTexMesh()){}
+    cameras_(c.getCameras()) {}
+    //texMesh_(c.getTexMesh()){}
 
 World::~World(){}
 
@@ -383,9 +383,8 @@ bool World::mapLocalUV(){
   return true;
 }
 
-int World::makeTextureAtlas(){
+bool World::makeTextureAtlas(int& imWidth, int& imHeight){
   int numImages(cameras_.size());
-  int imWidth;
   std::vector<cv::Mat> images(numImages);
   std::string fname;
   std::string textureAtlasFName("./texture_atlas.png");
@@ -394,22 +393,20 @@ int World::makeTextureAtlas(){
       fname = cameras_[i].getFileName();
       images[i]=cv::imread(fname, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
     }
-    cv::Mat atlas = createOneImage(images, imWidth);
-    mapGlobalUV(imWidth);
+    cv::Mat atlas = createOneImage(images, imWidth,imHeight);
+    mapGlobalUV(imWidth,imHeight);
     std::vector<int> imwriteParams(CV_IMWRITE_PNG_COMPRESSION,0);
-    bool status = cv::imwrite(textureAtlasFName,
-                              atlas,
-                              imwriteParams );
-    if (!status){
-      return -1;
-    }
+    return cv::imwrite(textureAtlasFName,
+                       atlas,
+                       imwriteParams );
   } else {
-    imWidth = cv::imread(fname).cols;
+    cv::Mat im = cv::imread(textureAtlasFName);
+    imWidth = im.cols;
+    imHeight = im.rows;
   }
-  return imWidth;
-//  return true;
+  return true;
 }
-
+/*
 bool World::makeTextureMesh(){
   // http://www.pcl-users.org/I-want-to-solve-surface-problem-please-td4028099.html
   // http://pointclouds.org/blog/gsoc/ktran/blog_6_7_obj_io.php
@@ -472,24 +469,103 @@ bool World::makeTextureMesh(){
   
   return true;
 }
+*/
+bool World::writeOBJ(const std::string& filename)const{
+  //int status = pcl::io::saveOBJFile("./out.obj", texMesh_);
+  int start = filename.find_last_of('/');
+  int end = filename.find_last_of('.');
+  int len = end - start;
 
-int World::writeOBJ(){
-  int status = pcl::io::saveOBJFile("./out.obj", texMesh_);
-  return status;
+  std::string base_name = filename.substr(start+1, len-1);
+  std::string mtl_name = filename.substr(0, end) + ".mtl";
+
+  std::ofstream output(filename.c_str());
+  std::ofstream mtl(mtl_name.c_str());
+  
+  std::string texFile("./texture_atlas.png");
+
+  if(!output) {
+      std::cerr << "Can't open " << filename << " for writing" << std::endl;
+      return false;
+  }
+
+  if(!mtl) {
+      std::cerr << "Can't open " << mtl_name << " for writing" << std::endl;
+      return false;
+  }
+
+  std::cout << "Saving " << filename << " ..." << std::endl;
+  std::cout << "Saving " << mtl_name << " ..." << std::endl;
+
+  // MTL file
+  mtl << "newmtl Texture_0" << std::endl;
+  mtl << "Ka 1 1 1" << std::endl;
+  mtl << "Kd 1 1 1" << std::endl;
+  mtl << "Ks 0 0 0" << std::endl;
+  mtl << "d 1.0" << std::endl;
+  mtl << "illum 2" << std::endl;
+  mtl << "map_Kd " << texFile << std::endl;
+  mtl << std::endl;
+  
+  // Writing OBJ file
+  output << "mtllib " << base_name << ".mtl" << std::endl;
+  
+  pcl::PointXYZ point;
+
+  // Write vertices
+  for(size_t i=0; i < patches_.size(); i++) {
+    point = patches_[i].getPoint();
+    output << "v " << point.x << " " << point.y << " " << point.z << std::endl;
+  }
+
+  // Write texture coordinates, ordered by camera and face
+  Eigen::Vector2f uv;
+  for(size_t triInd=0; triInd < triangles_.size(); triInd++) {
+    for(int vInd=0; vInd < 3; vInd ++) {
+      uv = uvg_[triInd].getv(vInd);
+      output << "vt " << uv(0) << " " << uv(1)  << std::endl;
+    }
+  }
+
+  // Write face
+  int idx=0;
+  Patch p;
+  output << "usemtl Texture_" << 0 << endl;
+  for(size_t triInd=0; triInd < triangles_.size(); triInd++) {
+
+    output << "f ";
+    for (int i=0;i<3;i++){
+      p = triangles_[triInd].getv(i);
+      output << (p.getPointInd()+1) << "/" << (idx + 1);
+      if (i<2) output<<" ";
+    }
+    output << std::endl;
+    idx += 3;
+  }
+  return true;
 }
 
-bool World::mapGlobalUV(const int& imWidth){
+bool World::writeOBJ()const{
+  
+  return writeOBJ("out.obj");
+}
+
+bool World::mapGlobalUV(const int& imWidth,const int& imHeight){
   uvg_ = std::vector<Triangle<Eigen::Vector2f> >(uvl_.size());
   Triangle<uvl_t> localUVtri;
   Triangle<Eigen::Vector2f> uvTri;
+  int numCameras = cameras_.size();
+  Eigen::Vector2f uv;
   int xoffset;
   for (size_t triInd=0;triInd<uvl_.size();++triInd){
     localUVtri = uvl_[triInd];
     for (size_t vInd=0;vInd<3;++vInd){
       xoffset = localUVtri.getv(vInd).imnum * imWidth;
-      uvTri.setv( vInd,
-                  Eigen::Vector2f(localUVtri.getv(vInd).uv(0)+xoffset,
-                                  localUVtri.getv(vInd).uv(1)));
+      uv(0) = localUVtri.getv(vInd).uv(0)+xoffset;
+      uv(1) = localUVtri.getv(vInd).uv(1);
+      uv(0) /= imWidth*numCameras;
+      uv(1) /= imHeight;
+      uvTri.setv( vInd,uv );
     }
     uvg_[triInd] = uvTri;
   }
@@ -497,7 +573,7 @@ bool World::mapGlobalUV(const int& imWidth){
   return true;
 }
 
-cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth)const{
+cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth, int& imHeight)const{
 // Inspired by http://answers.opencv.org/question/13876/read-multiple-images-from-folder-and-concat/
   
   int numImages(images.size());
@@ -530,6 +606,7 @@ cv::Mat World::createOneImage(const std::vector<cv::Mat>& images,int& imWidth)co
     curWidth += width;
   }
   imWidth = width;
+  imHeight = height;
   return result;
 }
 

@@ -25,7 +25,8 @@ int main() {
   t1 = clock();
   std::string dir("/home/dan/pmvs/");
   std::string plyname("models/option-0000-crop-alpha.ply");
-  
+ 
+  int imHeight,imWidth; 
   int totNimgs(48);
   
   World w(totNimgs);
@@ -41,12 +42,11 @@ int main() {
   std::cout <<"Map Local UV: ";
   std::cout << w.mapLocalUV()<<std::endl;
   std::cout <<"Make Texture Atlas: ";
-  int width = w.makeTextureAtlas();
-  std::cout << (width>-1) <<std::endl;
+  std::cout << w.makeTextureAtlas(imWidth,imHeight) <<std::endl;
   std::cout <<"Map Global UV: ";
-  std::cout << w.mapGlobalUV(width)<<std::endl;
-  std::cout <<"Make Texture Mesh: ";
-  std::cout << w.makeTextureMesh()<<std::endl;
+  std::cout << w.mapGlobalUV(imWidth,imHeight)<<std::endl;
+//  std::cout <<"Make Texture Mesh: ";
+//  std::cout << w.makeTextureMesh()<<std::endl;
   std::cout <<"Write obj File: ";
   std::cout << w.writeOBJ()<<std::endl;
 

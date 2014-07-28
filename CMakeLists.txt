@@ -4,14 +4,14 @@ cmake_minimum_required (VERSION 2.6)
 
 #set(LIB_MACROS "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-         "${URBAN_TEXTURE_SRC_DIR}/cmake")
+set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}
+                       ${PROJECT_SOURCE_DIR}/cmake)
 
 #set(Eigen3_DIR  
 
 # Find external libraries
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.2 REQUIRED)
+find_package(PCL 1.7 REQUIRED)
 find_package(OpenCV REQUIRED)
 
 if (NOT CMAKE_BUILD_TYPE)
