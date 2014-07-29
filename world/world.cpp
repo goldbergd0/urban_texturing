@@ -527,6 +527,13 @@ bool World::writeOBJ(const std::string& filename)const{
     }
   }
 
+  // Write normal vectors
+  pcl::Normal norm;
+  for(size_t i=0; i < patches_.size(); i++) {
+    norm = patches_[i].getNormal();
+    output << "vn " << norm.normal_x << " " << norm.normal_y <<" "<<norm.normal_z  << std::endl;
+  }
+
   // Write face
   int idx=0;
   Patch p;
