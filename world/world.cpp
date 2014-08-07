@@ -54,7 +54,7 @@ World::World(const World& c)
 World::~World(){}
 
 // fname is name and path
-bool World::readPly(const std::string& fname){
+bool World::readPly(const std::string& pmvsdir){
   /*
   Example from http://www.pcl-users.org/Registering-PolygonMeshes-td4025472.html
   
@@ -68,7 +68,8 @@ bool World::readPly(const std::string& fname){
   //pcl::PLYReader reader;
   //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   //return (reader.read(fname,*cloud)<0);
-  int status = pcl::io::loadPolygonFilePLY(fname,mesh_);
+  // PLY Must be named mesh.ply and be located in models
+  int status = pcl::io::loadPolygonFilePLY(pmvsdir+"/models/mesh.ply",mesh_);
   if (status==-1){
     return false;
   }

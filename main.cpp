@@ -24,7 +24,7 @@ int main() {
   clock_t t1,t2;
   t1 = clock();
   std::string dir("/home/dan/pmvs/");
-  std::string plyname("models/option-0000-crop-alpha.ply");
+  //std::string plyname("models/mesh.ply");
  
   int imHeight,imWidth; 
   int totNimgs(48);
@@ -32,7 +32,7 @@ int main() {
   World w(totNimgs);
   
   std::cout <<"Reading PLY: ";
-  std::cout <<w.readPly(dir+plyname)<<std::endl;
+  std::cout <<w.readPly(dir)<<std::endl;
   std::cout <<"Reading Cameras: ";
   std::cout << w.readCameras(dir)<<std::endl;
   std::cout <<"Reading Patch file: ";
